@@ -1,6 +1,5 @@
 import type { LatLngExpression } from "leaflet";
-import type { DepartureTime, MonitorRes } from "../types/wiener_linien";
-import { U4HeiligenstadtStops } from "./stop-ids";
+import type { MonitorRes } from "../types/wiener_linien";
 
 async function fetchMonitors(stops: number[]) {
   const res = await fetch(
@@ -11,22 +10,19 @@ async function fetchMonitors(stops: number[]) {
   return json.data.monitors;
 }
 
-export async function getStopLatLngCoordinates() {
-  const monitors = await fetchMonitors(U4HeiligenstadtStops);
+export async function getCoordinates(stopsIds: number[]) {
+  const monitors = await fetchMonitors(stopsIds);
 
-  return monitors.map(
+  const stationCoordinates = monitors.map(
     (monitor) =>
       [
         monitor.locationStop.geometry.coordinates[1],
         monitor.locationStop.geometry.coordinates[0],
       ] as LatLngExpression
   );
-}
 
-export async function getCoordinates(stopsIds: number[]) {
-  const monitors = await fetchMonitors(stopsIds);
-
-  const coordinates: LatLngExpression[] = [];
+  // Get train coordinates
+  const trainCoordinates: LatLngExpression[] = [];
   for (let i = 1; i < stopsIds.length; i++) {
     const stopId = stopsIds[i];
     const previousStopId = stopsIds[i - 1];
@@ -50,7 +46,7 @@ export async function getCoordinates(stopsIds: number[]) {
 
     if (departure.countdown == 0) {
       // Train at current stop
-      coordinates.push([
+      trainCoordinates.push([
         monitor.locationStop.geometry.coordinates[1],
         monitor.locationStop.geometry.coordinates[0],
       ]);
@@ -65,9 +61,9 @@ export async function getCoordinates(stopsIds: number[]) {
           monitor.locationStop.geometry.coordinates[0]) /
         2;
 
-      coordinates.push([middleLat, middleLng]);
+      trainCoordinates.push([middleLat, middleLng]);
     }
   }
 
-  return coordinates;
+  return { stationCoordinates, trainCoordinates };
 }

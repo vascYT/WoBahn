@@ -3,11 +3,8 @@ export const prerender = true;
 
 import Layout from "../layouts/Layout.astro";
 import Map from "../components/Map";
-import { getStopLatLngCoordinates } from "../utils/wiener-linien";
-
-const stopsCoordinates = await getStopLatLngCoordinates();
 ---
 
 <Layout>
-  <Map client:only stopCoordinates={stopsCoordinates} />
+  <Map client:only />
 </Layout>
