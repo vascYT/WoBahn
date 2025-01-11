@@ -13,6 +13,7 @@ export default function Map() {
         className="w-screen h-screen"
         center={[48.208176, 16.373819]}
         zoom={13}
+        minZoom={12}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
