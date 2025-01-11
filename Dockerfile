@@ -1,4 +1,6 @@
 FROM node:lts-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
 COPY . .
 RUN corepack enable
