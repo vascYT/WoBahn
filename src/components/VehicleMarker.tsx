@@ -1,15 +1,22 @@
 import L from "leaflet";
 import { Popup } from "react-leaflet";
-import type { Train } from "../types/api";
+import type { LineType, Train } from "../types/api";
 import DriftMarker from "react-leaflet-drift-marker";
 import { getRelativeSeconds } from "../utils/misc";
 import useCountdown from "../hooks/useCountdown";
 
+const iconUrls: Record<LineType, string> = {
+  metro: "/icons/metro.png",
+  bus: "/icons/metro.png",
+  tram: "/icons/metro.png",
+};
+
 interface Props {
+  type: LineType;
   train: Train;
 }
 
-export default function VehicleMarker({ train }: Props) {
+export default function VehicleMarker({ type, train }: Props) {
   const arrivingIn = useCountdown(
     train.arrivingAt ? getRelativeSeconds(new Date(train.arrivingAt)) : 0
   );
@@ -17,7 +24,7 @@ export default function VehicleMarker({ train }: Props) {
   return (
     <DriftMarker
       icon={L.icon({
-        iconUrl: "/icons/ubahn.png",
+        iconUrl: iconUrls[type],
         iconSize: [40, 26],
         className: arrivingIn ? "animate-pulse" : undefined,
       })}

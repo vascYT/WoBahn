@@ -77,7 +77,6 @@ export async function getCoordinates(stopsIds: number[]) {
       previousDepature.departureTime.countdown >=
       departure.departureTime.countdown
     ) {
-      console.log(JSON.stringify(monitor.lines.length, null, 2));
       // Train between previous and current stop
       const middleLat =
         (previousMonitor.locationStop.geometry.coordinates[1] +

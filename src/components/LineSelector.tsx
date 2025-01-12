@@ -1,5 +1,5 @@
 import { useLineStore } from "../hooks/useLineStore";
-import stopIds from "../utils/stop-ids";
+import lines from "../utils/lines";
 
 export default function LineSelector() {
   const lineId = useLineStore((state) => state.id);
@@ -11,9 +11,9 @@ export default function LineSelector() {
       value={lineId}
       onChange={(e) => setLineId(e.target.value)}
     >
-      {Object.keys(stopIds).map((id) => (
+      {Object.keys(lines).map((id) => (
         <option key={id} value={id}>
-          {id}
+          {lines[id].name}
         </option>
       ))}
     </select>

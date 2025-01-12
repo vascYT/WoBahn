@@ -1,18 +1,14 @@
-import L from "leaflet";
-import {
-  MapContainer,
-  Marker,
-  Polyline,
-  Popup,
-  TileLayer,
-} from "react-leaflet";
+import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 import useLocations from "../hooks/useLocations";
 import LineSelector from "./LineSelector";
 import VehicleMarker from "./VehicleMarker";
 import StopMarker from "./StopMarker";
+import { useLineStore } from "../hooks/useLineStore";
+import lines from "../utils/lines";
 
 export default function Map() {
   const { data } = useLocations();
+  const lineId = useLineStore((state) => state.id);
 
   return (
     <>
@@ -30,15 +26,15 @@ export default function Map() {
         {data && (
           <>
             <Polyline
-              pathOptions={{ color: "blue" }}
+              pathOptions={{ color: lines[lineId].color }}
               positions={data.stations.map((s) => s.coordinates)}
             />
             {data.stations.map((s, i) => (
-              <StopMarker key={i} station={s} />
+              <StopMarker key={i} type={lines[lineId].type} station={s} />
             ))}
             {data.trains.map((t, i) => (
               // Index really not ideal as a key, but I don't have a unique id for each train
-              <VehicleMarker key={i} train={t} />
+              <VehicleMarker key={i} type={lines[lineId].type} train={t} />
             ))}
           </>
         )}

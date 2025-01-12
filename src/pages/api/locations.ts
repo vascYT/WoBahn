@@ -1,9 +1,10 @@
 import type { APIRoute } from "astro";
 import { getCoordinates } from "../../utils/wiener-linien";
-import stopIds from "../../utils/stop-ids";
+import lines from "../../utils/lines";
+import type { LocationsRes } from "../../types/api";
 
 type ResCache = {
-  data: Awaited<ReturnType<typeof getCoordinates>>;
+  data: LocationsRes;
   lastUpdate: Date;
 };
 
@@ -19,7 +20,7 @@ export const GET: APIRoute = async ({ request }) => {
       status: 400,
     });
 
-  if (!Object.keys(stopIds).includes(line))
+  if (!Object.keys(lines).includes(line))
     return new Response("invalid line", {
       status: 400,
     });
@@ -30,7 +31,8 @@ export const GET: APIRoute = async ({ request }) => {
     new Date().getTime() - cachedRes.lastUpdate.getTime() > refreshInterval
   ) {
     try {
-      const data = await getCoordinates(stopIds[line]);
+      const data = await getCoordinates(lines[line].stops);
+
       cache.set(line, {
         data,
         lastUpdate: new Date(),

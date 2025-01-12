@@ -1,3 +1,12 @@
+import type lines from "../utils/lines";
+
+export type LocationsRes = {
+  stations: Station[];
+  trains: Train[];
+};
+
+export type LineType = "metro" | "tram" | "bus";
+
 export type Station = {
   description: string;
   coordinates: LatLngExpression;
