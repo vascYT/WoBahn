@@ -1,13 +1,13 @@
 import useSWR from "swr";
 import { useLineStore } from "./useLineStore";
-import type { StationLocation, TrainLocation } from "../types/api";
+import type { Station, Train } from "../types/api";
 
 const fetcher = (...args: [RequestInfo, RequestInit?]) =>
   fetch(...args).then((res) => res.json());
 
 type LocationRes = {
-  stations: StationLocation[];
-  trains: TrainLocation[];
+  stations: Station[];
+  trains: Train[];
 };
 export default function useLocations() {
   const lineId = useLineStore((state) => state.id);

@@ -1,5 +1,5 @@
-import type { MonitorRes } from "../types/wiener_linien";
-import type { StationLocation, TrainLocation } from "../types/api";
+import type { Station, Train } from "../types/api";
+import type { DepartureTime, MonitorRes } from "../types/wiener_linien";
 
 async function fetchMonitors(stops: number[]) {
   const res = await fetch(
@@ -10,12 +10,17 @@ async function fetchMonitors(stops: number[]) {
   return json.data.monitors;
 }
 
+const getNextDepatureDate = (departure: DepartureTime) =>
+  departure.timeReal
+    ? new Date(departure.timeReal).toISOString()
+    : new Date(Date.now() + departure.countdown * 60 * 1000).toISOString();
+
 export async function getCoordinates(stopsIds: number[]) {
   const monitors = await fetchMonitors(stopsIds);
 
   // Get train coordinates
-  const stations: StationLocation[] = [];
-  const trains: TrainLocation[] = [];
+  const stations: Station[] = [];
+  const trains: Train[] = [];
   for (let i = 1; i < stopsIds.length; i++) {
     const stopId = stopsIds[i];
     const previousStopId = stopsIds[i - 1];
@@ -35,10 +40,14 @@ export async function getCoordinates(stopsIds: number[]) {
             .join(", ")
       );
 
+    const departure = monitor.lines[0].departures.departure[0];
+    const previousDepature = previousMonitor.lines[0].departures.departure[0];
+
     // Save station coordinates
     if (i == 1) {
       stations.push({
-        description: monitor.locationStop.properties.title,
+        description: previousMonitor.locationStop.properties.title,
+        nextDepature: getNextDepatureDate(previousDepature.departureTime),
         coordinates: [
           previousMonitor.locationStop.geometry.coordinates[1],
           previousMonitor.locationStop.geometry.coordinates[0],
@@ -47,17 +56,14 @@ export async function getCoordinates(stopsIds: number[]) {
     }
     stations.push({
       description: monitor.locationStop.properties.title,
+      nextDepature: getNextDepatureDate(departure.departureTime),
       coordinates: [
         monitor.locationStop.geometry.coordinates[1],
         monitor.locationStop.geometry.coordinates[0],
       ],
     });
 
-    const departure = monitor.lines[0].departures.departure[0].departureTime;
-    const previousDepature =
-      previousMonitor.lines[0].departures.departure[0].departureTime;
-
-    if (departure.countdown == 0) {
+    if (departure.departureTime.countdown == 0) {
       // Train at current stop
       trains.push({
         description: `At ${monitor.locationStop.properties.title}`,
@@ -67,7 +73,11 @@ export async function getCoordinates(stopsIds: number[]) {
           monitor.locationStop.geometry.coordinates[0],
         ],
       });
-    } else if (previousDepature.countdown >= departure.countdown) {
+    } else if (
+      previousDepature.departureTime.countdown >=
+      departure.departureTime.countdown
+    ) {
+      console.log(JSON.stringify(monitor.lines.length, null, 2));
       // Train between previous and current stop
       const middleLat =
         (previousMonitor.locationStop.geometry.coordinates[1] +
@@ -80,11 +90,7 @@ export async function getCoordinates(stopsIds: number[]) {
 
       trains.push({
         description: `Next stop: ${monitor.locationStop.properties.title}`,
-        arrivingAt: departure.timeReal
-          ? new Date(departure.timeReal).toISOString()
-          : new Date(
-              Date.now() + departure.countdown * 60 * 1000
-            ).toISOString(),
+        arrivingAt: getNextDepatureDate(departure.departureTime),
         coordinates: [middleLat, middleLng],
       });
     }

@@ -9,6 +9,7 @@ import {
 import useLocations from "../hooks/useLocations";
 import LineSelector from "./LineSelector";
 import VehicleMarker from "./VehicleMarker";
+import StopMarker from "./StopMarker";
 
 export default function Map() {
   const { data } = useLocations();
@@ -33,19 +34,11 @@ export default function Map() {
               positions={data.stations.map((s) => s.coordinates)}
             />
             {data.stations.map((s, i) => (
-              <Marker
-                key={i}
-                icon={L.icon({
-                  iconUrl: "/icons/station.svg",
-                  iconSize: [20, 20],
-                })}
-                position={s.coordinates}
-              >
-                <Popup>{s.description}</Popup>
-              </Marker>
+              <StopMarker key={i} station={s} />
             ))}
             {data.trains.map((t, i) => (
-              <VehicleMarker key={i} previousLocation={t} location={t} />
+              // Index really not ideal as a key, but I don't have a unique id for each train
+              <VehicleMarker key={i} train={t} />
             ))}
           </>
         )}

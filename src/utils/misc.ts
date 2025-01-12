@@ -1,2 +1,2 @@
 export const getRelativeSeconds = (date: Date) =>
-  Math.max((date.getTime() - new Date().getTime()) / 1000, 0);
+  Math.max(Math.floor((date.getTime() - new Date().getTime()) / 1000), 0);

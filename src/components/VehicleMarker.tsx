@@ -1,22 +1,17 @@
 import L from "leaflet";
 import { Popup } from "react-leaflet";
-import type { TrainLocation } from "../types/api";
-import { useMemo } from "react";
+import type { Train } from "../types/api";
 import DriftMarker from "react-leaflet-drift-marker";
 import { getRelativeSeconds } from "../utils/misc";
+import useCountdown from "../hooks/useCountdown";
 
 interface Props {
-  previousLocation: TrainLocation;
-  location: TrainLocation;
+  train: Train;
 }
 
-export default function VehicleMarker({ previousLocation, location }: Props) {
-  const arrivingIn = useMemo(
-    () =>
-      location.arrivingAt
-        ? getRelativeSeconds(new Date(location.arrivingAt))
-        : null,
-    [location.arrivingAt]
+export default function VehicleMarker({ train }: Props) {
+  const arrivingIn = useCountdown(
+    train.arrivingAt ? getRelativeSeconds(new Date(train.arrivingAt)) : 0
   );
 
   return (
@@ -27,13 +22,13 @@ export default function VehicleMarker({ previousLocation, location }: Props) {
         className: arrivingIn ? "animate-pulse" : undefined,
       })}
       duration={1000}
-      position={location.coordinates}
+      position={train.coordinates}
     >
       <Popup>
-        {location.description}
-        {arrivingIn && (
+        {train.description}
+        {train.arrivingAt && (
           <>
-            <br /> Arriving in {arrivingIn}s
+            <br /> Arriving in &lt; {arrivingIn}s
           </>
         )}
       </Popup>
