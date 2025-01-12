@@ -12,7 +12,9 @@ export default function LineSelector() {
       onChange={(e) => setLineId(e.target.value)}
     >
       {Object.keys(stopIds).map((id) => (
-        <option value={id}>{id}</option>
+        <option key={id} value={id}>
+          {id}
+        </option>
       ))}
     </select>
   );

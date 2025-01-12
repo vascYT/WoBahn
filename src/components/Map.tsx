@@ -1,7 +1,14 @@
 import L from "leaflet";
-import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+} from "react-leaflet";
 import useLocations from "../hooks/useLocations";
 import LineSelector from "./LineSelector";
+import VehicleMarker from "./VehicleMarker";
 
 export default function Map() {
   const { data } = useLocations();
@@ -21,25 +28,24 @@ export default function Map() {
         />
         {data && (
           <>
-            {data.stationCoordinates.map((c, i) => (
+            <Polyline
+              pathOptions={{ color: "blue" }}
+              positions={data.stations.map((s) => s.coordinates)}
+            />
+            {data.stations.map((s, i) => (
               <Marker
                 key={i}
                 icon={L.icon({
                   iconUrl: "/icons/station.svg",
                   iconSize: [20, 20],
                 })}
-                position={c}
-              />
+                position={s.coordinates}
+              >
+                <Popup>{s.description}</Popup>
+              </Marker>
             ))}
-            {data.trainCoordinates.map((c, i) => (
-              <Marker
-                key={i}
-                icon={L.icon({
-                  iconUrl: "/icons/ubahn.png",
-                  iconSize: [40, 26],
-                })}
-                position={c}
-              />
+            {data.trains.map((t, i) => (
+              <VehicleMarker key={i} previousLocation={t} location={t} />
             ))}
           </>
         )}
