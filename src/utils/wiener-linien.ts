@@ -34,10 +34,7 @@ export async function getCoordinates(stopsIds: number[]) {
     );
     if (!monitor || !previousMonitor)
       throw new Error(
-        "Missing stop in response!\n" +
-          monitors
-            .map((monitor) => monitor.locationStop.properties.name)
-            .join(", ")
+        `Missing stop in response!: ${stopId} or ${previousStopId}`
       );
 
     const departure = monitor.lines[0].departures.departure[0];

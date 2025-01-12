@@ -45,7 +45,7 @@ export const GET: APIRoute = async ({ request }) => {
         },
       });
     } catch (e) {
-      console.error("Couldn't refresh data");
+      console.error("Couldn't refresh data", e);
     }
   }
 
