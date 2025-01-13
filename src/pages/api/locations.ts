@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { getCoordinates } from "../../utils/wiener-linien";
 import lines from "../../utils/lines";
 import type { LocationsRes } from "../../types/api";
+import { hasElapsedSeconds } from "../../utils/misc";
 
 type ResCache = {
   data: LocationsRes;
@@ -26,10 +27,7 @@ export const GET: APIRoute = async ({ request }) => {
     });
 
   const cachedRes = cache.get(line);
-  if (
-    !cachedRes ||
-    new Date().getTime() - cachedRes.lastUpdate.getTime() > refreshInterval
-  ) {
+  if (!cachedRes || hasElapsedSeconds(cachedRes.lastUpdate, refreshInterval)) {
     try {
       const data = await getCoordinates(lines[line].stops);
 
@@ -46,10 +44,19 @@ export const GET: APIRoute = async ({ request }) => {
       });
     } catch (e) {
       console.error("Couldn't refresh data", e);
+
+      if (!cachedRes || hasElapsedSeconds(cachedRes.lastUpdate, 60)) {
+        return new Response("", {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
     }
   }
 
-  return new Response(JSON.stringify(cachedRes!.data), {
+  return new Response(JSON.stringify(cachedRes.data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",

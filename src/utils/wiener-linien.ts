@@ -3,7 +3,7 @@ import type { DepartureTime, MonitorRes } from "../types/wiener_linien";
 
 async function fetchMonitors(stops: number[]) {
   const res = await fetch(
-    "https://www.wienerlinien.at/ogd_realtime/monitor?" +
+    "https://www.wienerlinien.at/ogd_realtime/monitor?activateTrafficInfo=stoerunglang&" +
       stops.map((id) => `stopId=${id}`).join("&")
   );
   const json = (await res.json()) as MonitorRes;

@@ -5,11 +5,15 @@ export interface MonitorRes {
 
 export interface Data {
   monitors: Monitor[];
+  trafficInfos: TrafficInfo[];
+  trafficInfoCategories: TrafficInfoCategory[];
+  trafficInfoCategoryGroups: TrafficInfoCategoryGroup[];
 }
 
 export interface Monitor {
   locationStop: LocationStop;
   lines: Line[];
+  refTrafficInfoNames: string[];
   attributes: Attributes3;
 }
 
@@ -87,6 +91,46 @@ export interface Vehicle {
 export interface Attributes2 {}
 
 export interface Attributes3 {}
+
+export interface TrafficInfo {
+  refTrafficInfoCategoryId: number;
+  name: string;
+  priority: string;
+  owner: string;
+  title: string;
+  description: string;
+  time: Time;
+  attributes: Attributes4;
+  relatedLines: string[];
+  relatedStops: number[];
+}
+
+export interface Time {
+  start: string;
+  end: string;
+  resume: string;
+}
+
+export interface Attributes4 {
+  relatedLineTypes: RelatedLineTypes;
+}
+
+export interface RelatedLineTypes {
+  U3: string;
+}
+
+export interface TrafficInfoCategory {
+  id: number;
+  refTrafficInfoCategoryGroupId: number;
+  name: string;
+  trafficInfoNameList: string;
+  title: string;
+}
+
+export interface TrafficInfoCategoryGroup {
+  id: number;
+  name: string;
+}
 
 export interface Message {
   value: string;
