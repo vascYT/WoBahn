@@ -13,7 +13,7 @@ export default function Map() {
 
   return (
     <>
-      <LineSelector />
+      <LineSelector trafficInfos={data?.trafficInfos ?? []} />
       <MapContainer
         className="w-screen h-screen"
         center={[48.208176, 16.373819]}

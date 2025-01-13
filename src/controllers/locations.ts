@@ -1,8 +1,8 @@
 import EventEmitter from "events";
-import type { LocationsRes } from "../types/api";
-import { fetchMonitors, getCoordinates } from "../utils/wiener-linien";
+import { fetchMonitors, getLine } from "../utils/wiener-linien";
+import type { LineRes } from "../types/api";
 
-type Callback = (data: LocationsRes) => void;
+type Callback = (data: LineRes) => void;
 
 export class LocationController {
   private static instance: LocationController;
@@ -23,11 +23,10 @@ export class LocationController {
     );
 
     // Send data if we already have it
-    getCoordinates(line).then((data) => {
-      if (data.stations.length > 0 && data.trains.length > 0) {
-        callback(data);
-      }
-    });
+    const data = getLine(line);
+    if (data.stations.length > 0 && data.trains.length > 0) {
+      callback(data);
+    }
   }
 
   public unsubscribe(line: string, callback: Callback) {
@@ -60,7 +59,7 @@ export class LocationController {
 
         for (const line of lines) {
           try {
-            const data = await getCoordinates(line);
+            const data = getLine(line);
             this.emitter.emit(line, data);
           } catch (e) {
             console.error("Couldn't get coords", e);

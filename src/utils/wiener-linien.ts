@@ -1,11 +1,15 @@
 import type { Station, Train } from "../types/api";
-import type { DepartureTime, MonitorRes } from "../types/wiener_linien";
+import type {
+  DepartureTime,
+  MonitorRes,
+  TrafficInfo,
+} from "../types/wiener_linien";
 import lines from "./lines";
 
-let cachedMonitorsRes: MonitorRes;
+let cachedMonitorsRes: MonitorRes | null;
 export async function fetchMonitors(lineKeys: string[]) {
   let url =
-    "https://www.wienerlinien.at/ogd_realtime/monitor?activateTrafficInfo=stoerunglang&";
+    "https://www.wienerlinien.at/ogd_realtime/monitor?activateTrafficInfo=stoerunglang&lang&";
 
   const stopIds = [];
   for (const lineKey of lineKeys) {
@@ -19,14 +23,25 @@ export async function fetchMonitors(lineKeys: string[]) {
   cachedMonitorsRes = await res.json();
 }
 
+export function getLine(lineKey: string) {
+  const { stations, trains } = getCoordinates(lineKey);
+  const trafficInfos = getTrafficInfos(lineKey);
+
+  return {
+    stations,
+    trains,
+    trafficInfos,
+  };
+}
+
 const getNextDepatureDate = (departure: DepartureTime) =>
   departure.timeReal
     ? new Date(departure.timeReal).toISOString()
     : new Date(Date.now() + departure.countdown * 60 * 1000).toISOString();
 
-export async function getCoordinates(lineKey: string) {
+export function getCoordinates(lineKey: string) {
   const stopIds = lines[lineKey].stops;
-  const monitors = cachedMonitorsRes.data.monitors;
+  const monitors = cachedMonitorsRes?.data.monitors ?? [];
 
   // Get train coordinates
   const stations: Station[] = [];
@@ -100,4 +115,26 @@ export async function getCoordinates(lineKey: string) {
   }
 
   return { stations, trains };
+}
+
+export function getTrafficInfos(lineKey: string) {
+  if (!cachedMonitorsRes || !cachedMonitorsRes.data.trafficInfos) return [];
+
+  const stopIds = lines[lineKey].stops;
+
+  const trafficInfos: TrafficInfo[] = [];
+  for (const stopId of stopIds) {
+    for (const trafficInfo of cachedMonitorsRes.data.trafficInfos) {
+      if (
+        trafficInfo.relatedStops.includes(stopId) &&
+        !trafficInfos
+          .map((trafficInfo) => trafficInfo.name)
+          .includes(trafficInfo.name)
+      ) {
+        trafficInfos.push(trafficInfo);
+      }
+    }
+  }
+
+  return trafficInfos;
 }

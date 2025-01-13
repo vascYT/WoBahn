@@ -5,9 +5,9 @@ export interface MonitorRes {
 
 export interface Data {
   monitors: Monitor[];
-  trafficInfos: TrafficInfo[];
-  trafficInfoCategories: TrafficInfoCategory[];
-  trafficInfoCategoryGroups: TrafficInfoCategoryGroup[];
+  trafficInfos?: TrafficInfo[];
+  trafficInfoCategories?: TrafficInfoCategory[];
+  trafficInfoCategoryGroups?: TrafficInfoCategoryGroup[];
 }
 
 export interface Monitor {
