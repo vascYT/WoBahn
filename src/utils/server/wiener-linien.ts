@@ -51,17 +51,14 @@ export function getCoordinates(lineKey: string) {
     const stopId = line.stops[i];
     const previousStopId = line.stops[i - 1];
 
-    const monitor = monitors.find(
-      (monitor) =>
-        monitor.locationStop.properties.attributes.rbl === stopId &&
-        monitor.lines[0].lineId == line.lineId &&
-        monitor.lines[0].direction == line.direction
-    );
-    const previousMonitor = monitors.find(
-      (monitor) =>
-        monitor.locationStop.properties.attributes.rbl === previousStopId &&
-        monitor.lines[0].lineId == line.lineId &&
-        monitor.lines[0].direction == line.direction
+    const [previousMonitor, monitor] = [previousStopId, stopId].map((id) =>
+      monitors.find(
+        (monitor) =>
+          monitor.locationStop.properties.attributes.rbl === id &&
+          monitor.lines[0].lineId == line.lineId &&
+          (i == line.stops.length - 1 ||
+            monitor.lines[0].direction == line.direction) // Last stop is always in the other direction
+      )
     );
     if (!monitor || !previousMonitor) break;
 
