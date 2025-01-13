@@ -105,7 +105,8 @@ export default {
     stops: [
       4402, // Heiligenstadt
       4440, // Spittelau
-      4404, // Friedensbrücke
+      4433, // Friedensbrücke (Temporary fix for U4 Gleiswechselbetrieb from 13/01/2025 -> 26/02/2025)
+      // 4404, // Friedensbrücke
       4406, // Roßauer Lände
       4408, // Schottenring
       4410, // Schwedenplatz

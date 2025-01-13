@@ -1,10 +1,10 @@
-import type { Station, Train } from "../types/api";
+import type { Station, Train } from "../../types/api";
 import type {
   DepartureTime,
   MonitorRes,
   TrafficInfo,
-} from "../types/wiener_linien";
-import lines from "./lines";
+} from "../../types/wiener_linien";
+import lines from "../lines";
 
 let cachedMonitorsRes: MonitorRes | null;
 export async function fetchMonitors(lineKeys: string[]) {
@@ -16,7 +16,8 @@ export async function fetchMonitors(lineKeys: string[]) {
     const line = lines[lineKey];
     stopIds.push(...line.stops);
   }
-  url += stopIds.map((id) => `stopId=${id}`).join("&");
+  // using a set removes any duplicate values
+  url += [...new Set(stopIds)].map((id) => `stopId=${id}`).join("&");
   console.log(`Refetching ${url}`);
 
   const res = await fetch(url);
@@ -40,22 +41,27 @@ const getNextDepatureDate = (departure: DepartureTime) =>
     : new Date(Date.now() + departure.countdown * 60 * 1000).toISOString();
 
 export function getCoordinates(lineKey: string) {
-  const stopIds = lines[lineKey].stops;
+  const line = lines[lineKey];
   const monitors = cachedMonitorsRes?.data.monitors ?? [];
 
   // Get train coordinates
   const stations: Station[] = [];
   const trains: Train[] = [];
-  for (let i = 1; i < stopIds.length; i++) {
-    const stopId = stopIds[i];
-    const previousStopId = stopIds[i - 1];
+  for (let i = 1; i < line.stops.length; i++) {
+    const stopId = line.stops[i];
+    const previousStopId = line.stops[i - 1];
 
     const monitor = monitors.find(
-      (monitor) => monitor.locationStop.properties.attributes.rbl === stopId
+      (monitor) =>
+        monitor.locationStop.properties.attributes.rbl === stopId &&
+        monitor.lines[0].lineId == line.lineId &&
+        monitor.lines[0].direction == line.direction
     );
     const previousMonitor = monitors.find(
       (monitor) =>
-        monitor.locationStop.properties.attributes.rbl === previousStopId
+        monitor.locationStop.properties.attributes.rbl === previousStopId &&
+        monitor.lines[0].lineId == line.lineId &&
+        monitor.lines[0].direction == line.direction
     );
     if (!monitor || !previousMonitor) break;
 

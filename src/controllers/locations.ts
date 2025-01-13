@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { fetchMonitors, getLine } from "../utils/wiener-linien";
+import { fetchMonitors, getLine } from "../utils/server/wiener-linien";
 import type { LineRes } from "../types/api";
 
 type Callback = (data: LineRes) => void;
