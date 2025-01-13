@@ -1,13 +1,22 @@
 import type { Station, Train } from "../types/api";
 import type { DepartureTime, MonitorRes } from "../types/wiener_linien";
+import lines from "./lines";
 
-async function fetchMonitors(stops: number[]) {
-  const res = await fetch(
-    "https://www.wienerlinien.at/ogd_realtime/monitor?activateTrafficInfo=stoerunglang&" +
-      stops.map((id) => `stopId=${id}`).join("&")
-  );
-  const json = (await res.json()) as MonitorRes;
-  return json.data.monitors;
+let cachedMonitorsRes: MonitorRes;
+export async function fetchMonitors(lineKeys: string[]) {
+  let url =
+    "https://www.wienerlinien.at/ogd_realtime/monitor?activateTrafficInfo=stoerunglang&";
+
+  const stopIds = [];
+  for (const lineKey of lineKeys) {
+    const line = lines[lineKey];
+    stopIds.push(...line.stops);
+  }
+  url += stopIds.map((id) => `stopId=${id}`).join("&");
+  console.log(`Refetching ${url}`);
+
+  const res = await fetch(url);
+  cachedMonitorsRes = await res.json();
 }
 
 const getNextDepatureDate = (departure: DepartureTime) =>
@@ -15,15 +24,16 @@ const getNextDepatureDate = (departure: DepartureTime) =>
     ? new Date(departure.timeReal).toISOString()
     : new Date(Date.now() + departure.countdown * 60 * 1000).toISOString();
 
-export async function getCoordinates(stopsIds: number[]) {
-  const monitors = await fetchMonitors(stopsIds);
+export async function getCoordinates(lineKey: string) {
+  const stopIds = lines[lineKey].stops;
+  const monitors = cachedMonitorsRes.data.monitors;
 
   // Get train coordinates
   const stations: Station[] = [];
   const trains: Train[] = [];
-  for (let i = 1; i < stopsIds.length; i++) {
-    const stopId = stopsIds[i];
-    const previousStopId = stopsIds[i - 1];
+  for (let i = 1; i < stopIds.length; i++) {
+    const stopId = stopIds[i];
+    const previousStopId = stopIds[i - 1];
 
     const monitor = monitors.find(
       (monitor) => monitor.locationStop.properties.attributes.rbl === stopId
@@ -32,10 +42,7 @@ export async function getCoordinates(stopsIds: number[]) {
       (monitor) =>
         monitor.locationStop.properties.attributes.rbl === previousStopId
     );
-    if (!monitor || !previousMonitor)
-      throw new Error(
-        `Missing stop in response!: ${stopId} or ${previousStopId}`
-      );
+    if (!monitor || !previousMonitor) break;
 
     const departure = monitor.lines[0].departures.departure[0];
     const previousDepature = previousMonitor.lines[0].departures.departure[0];

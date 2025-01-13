@@ -1,13 +1,14 @@
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
-import useLocations from "../hooks/useLocations";
 import LineSelector from "./LineSelector";
 import VehicleMarker from "./VehicleMarker";
 import StopMarker from "./StopMarker";
 import { useLineStore } from "../hooks/useLineStore";
 import lines from "../utils/lines";
+import useLine from "../hooks/useLine";
+import LoadingOverlay from "./LoadingOverlay";
 
 export default function Map() {
-  const { data } = useLocations();
+  const data = useLine();
   const lineId = useLineStore((state) => state.id);
 
   return (
@@ -23,7 +24,7 @@ export default function Map() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {data && (
+        {data ? (
           <>
             <Polyline
               pathOptions={{ color: lines[lineId].color }}
@@ -37,6 +38,8 @@ export default function Map() {
               <VehicleMarker key={i} type={lines[lineId].type} train={t} />
             ))}
           </>
+        ) : (
+          <LoadingOverlay />
         )}
       </MapContainer>
     </>

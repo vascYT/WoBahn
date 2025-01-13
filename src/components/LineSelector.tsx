@@ -7,7 +7,7 @@ export default function LineSelector() {
 
   return (
     <select
-      className="absolute top-1 right-1 z-[1000] px-5 py-2 rounded-md border border-black"
+      className="absolute top-1 right-1 z-[600] px-5 py-2 rounded-md border border-black"
       value={lineId}
       onChange={(e) => setLineId(e.target.value)}
     >
