@@ -60,7 +60,7 @@ export function getCoordinates(lineKey: string) {
             monitor.lines[0].direction == line.direction) // Last stop is always in the other direction
       )
     );
-    if (!monitor || !previousMonitor) break;
+    if (!monitor || !previousMonitor) continue; // skip, if one of them are missing
 
     const departure = monitor.lines[0].departures.departure[0];
     const previousDepature = previousMonitor.lines[0].departures.departure[0];
