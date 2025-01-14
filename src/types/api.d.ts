@@ -1,3 +1,4 @@
+import type { LatLngExpression } from "leaflet";
 import type lines from "../utils/lines";
 import type { TrafficInfo } from "./wiener_linien";
 

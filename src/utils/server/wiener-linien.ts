@@ -65,24 +65,24 @@ export function getCoordinates(lineKey: string) {
     const departure = monitor.lines[0].departures.departure[0];
     const previousDepature = previousMonitor.lines[0].departures.departure[0];
 
+    const [prvLng, prvLat] = previousMonitor.locationStop.geometry.coordinates;
+    const [lng, lat] = monitor.locationStop.geometry.coordinates;
+
+    if (!(prvLng && prvLat && lng && lat)) continue; // skip, if we don't have coordinates
+
     // Save station coordinates
     if (i == 1) {
       stations.push({
         description: previousMonitor.locationStop.properties.title,
         nextDepature: getNextDepatureDate(previousDepature.departureTime),
-        coordinates: [
-          previousMonitor.locationStop.geometry.coordinates[1],
-          previousMonitor.locationStop.geometry.coordinates[0],
-        ],
+        coordinates: [prvLat, prvLng],
       });
     }
+
     stations.push({
       description: monitor.locationStop.properties.title,
       nextDepature: getNextDepatureDate(departure.departureTime),
-      coordinates: [
-        monitor.locationStop.geometry.coordinates[1],
-        monitor.locationStop.geometry.coordinates[0],
-      ],
+      coordinates: [lat, lng],
     });
 
     if (departure.departureTime.countdown == 0) {
@@ -90,29 +90,17 @@ export function getCoordinates(lineKey: string) {
       trains.push({
         description: `At ${monitor.locationStop.properties.title}`,
         arrivingAt: null,
-        coordinates: [
-          monitor.locationStop.geometry.coordinates[1],
-          monitor.locationStop.geometry.coordinates[0],
-        ],
+        coordinates: [lat, lng],
       });
     } else if (
       previousDepature.departureTime.countdown >=
       departure.departureTime.countdown
     ) {
       // Train between previous and current stop
-      const middleLat =
-        (previousMonitor.locationStop.geometry.coordinates[1] +
-          monitor.locationStop.geometry.coordinates[1]) /
-        2;
-      const middleLng =
-        (previousMonitor.locationStop.geometry.coordinates[0] +
-          monitor.locationStop.geometry.coordinates[0]) /
-        2;
-
       trains.push({
         description: `Next stop: ${monitor.locationStop.properties.title}`,
         arrivingAt: getNextDepatureDate(departure.departureTime),
-        coordinates: [middleLat, middleLng],
+        coordinates: [(prvLat + lat) / 2, (prvLng + lng) / 2],
       });
     }
   }

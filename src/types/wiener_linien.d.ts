@@ -25,7 +25,7 @@ export interface LocationStop {
 
 export interface Geometry {
   type: string;
-  coordinates: number[];
+  coordinates: number[] | null[];
 }
 
 export interface Properties {
