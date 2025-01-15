@@ -1,4 +1,8 @@
 FROM node:lts-alpine AS base
+
+ARG PLAUSIBLE_URL
+ARG PLAUSIBLE_DOMAIN
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
@@ -10,6 +14,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-l
 
 FROM base AS build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+ENV PUBLIC_PLAUSIBLE_URL=$PLAUSIBLE_URL
+ENV PUBLIC_PLAUSIBLE_DOMAIN=$PLAUSIBLE_DOMAIN
 RUN pnpm run build
 
 FROM base AS runtime
