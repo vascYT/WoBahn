@@ -1,6 +1,8 @@
 ---
 import "leaflet/dist/leaflet.css";
+import Navbar from "../components/Navbar.astro";
 
+const { title } = Astro.props;
 const { PUBLIC_PLAUSIBLE_URL, PUBLIC_PLAUSIBLE_DOMAIN } = import.meta.env;
 ---
 
@@ -19,9 +21,12 @@ const { PUBLIC_PLAUSIBLE_URL, PUBLIC_PLAUSIBLE_DOMAIN } = import.meta.env;
         />
       )
     }
-    <title>WoBahn</title>
+    <title>
+      {title ? `${title} • WoBahn` : "WoBahn"}
+    </title>
   </head>
-  <body>
+  <body class="grid grid-rows-[auto,1fr,auto] min-h-screen">
+    <Navbar />
     <slot />
   </body>
 </html>

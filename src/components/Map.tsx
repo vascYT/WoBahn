@@ -13,13 +13,13 @@ export default function Map() {
 
   return (
     <>
-      <LineSelector trafficInfos={data?.trafficInfos ?? []} />
       <MapContainer
-        className="w-screen h-screen"
+        className="relative w-screen h-full"
         center={[48.208176, 16.373819]}
         zoom={13}
         minZoom={12}
       >
+        <LineSelector trafficInfos={data?.trafficInfos ?? []} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Data source: <a href="https://data.wien.gv.at">Stadt Wien</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

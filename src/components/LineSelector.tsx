@@ -13,7 +13,7 @@ export default function LineSelector({ trafficInfos }: Props) {
   return (
     <div className="absolute top-0 right-0 z-[600] overflow-hidden p-1 text-right">
       <select
-        className="px-5 py-2 rounded-md border border-black"
+        className="px-5 py-2 rounded-md border border-black text-base"
         value={lineId}
         onChange={(e) => setLineId(e.target.value)}
       >
