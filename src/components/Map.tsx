@@ -21,7 +21,7 @@ export default function Map() {
         minZoom={12}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Datenquelle: <a href="https://data.wien.gv.at">Stadt Wien</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Data source: <a href="https://data.wien.gv.at">Stadt Wien</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {data ? (
