@@ -14,7 +14,7 @@ export default function Map() {
   return (
     <>
       <MapContainer
-        className="relative w-screen h-full"
+        className="relative w-screen h-full outline-none"
         center={[48.208176, 16.373819]}
         zoom={13}
         minZoom={12}

@@ -9,7 +9,7 @@ import lines from "../lines";
 let cachedMonitorsRes: MonitorRes | null;
 export async function fetchMonitors(lineKeys: string[]) {
   let url =
-    "https://www.wienerlinien.at/ogd_realtime/monitor?activateTrafficInfo=stoerunglang&lang&";
+    "https://www.wienerlinien.at/ogd_realtime/monitor?activateTrafficInfo=stoerunglang&";
 
   const stopIds = [];
   for (const lineKey of lineKeys) {
