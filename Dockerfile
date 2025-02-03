@@ -7,6 +7,7 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
 COPY . .
+RUN npm i -g corepack@latest 
 RUN corepack enable
 
 FROM base AS prod-deps
