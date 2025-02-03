@@ -76,6 +76,7 @@ export function getCoordinates(lineKey: string) {
         description: previousMonitor.locationStop.properties.title,
         nextDepature: getNextDepatureDate(previousDepature.departureTime),
         coordinates: [prvLat, prvLng],
+        barrierFree: previousMonitor.lines[0].barrierFree,
       });
     }
 
@@ -83,6 +84,7 @@ export function getCoordinates(lineKey: string) {
       description: monitor.locationStop.properties.title,
       nextDepature: getNextDepatureDate(departure.departureTime),
       coordinates: [lat, lng],
+      barrierFree: monitor.lines[0].barrierFree,
     });
 
     if (departure.departureTime.countdown == 0) {
@@ -91,6 +93,7 @@ export function getCoordinates(lineKey: string) {
         description: `At ${monitor.locationStop.properties.title}`,
         arrivingAt: null,
         coordinates: [lat, lng],
+        barrierFree: monitor.lines[0].barrierFree,
       });
     } else if (
       previousDepature.departureTime.countdown >=
@@ -101,6 +104,7 @@ export function getCoordinates(lineKey: string) {
         description: `Next stop: ${monitor.locationStop.properties.title}`,
         arrivingAt: getNextDepatureDate(departure.departureTime),
         coordinates: [(prvLat + lat) / 2, (prvLng + lng) / 2],
+        barrierFree: monitor.lines[0].barrierFree,
       });
     }
   }

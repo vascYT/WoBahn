@@ -4,11 +4,12 @@ import type { LineType, Train } from "../types/api";
 import DriftMarker from "react-leaflet-drift-marker";
 import { getRelativeSeconds } from "../utils/misc";
 import useCountdown from "../hooks/useCountdown";
+import { Accessibility } from "lucide-react";
 
-const iconUrls: Record<LineType, string> = {
-  metro: "/icons/metro.png",
-  bus: "/icons/metro.png",
-  tram: "/icons/metro.png",
+const iconUrls: Record<LineType, string[]> = {
+  metro: ["/icons/silberpfeil.png", "/icons/felix.png"],
+  bus: ["/icons/silberpfeil.png", "/icons/felix.png"],
+  tram: ["/icons/silberpfeil.png", "/icons/felix.png"],
 };
 
 interface Props {
@@ -24,7 +25,7 @@ export default function VehicleMarker({ type, train }: Props) {
   return (
     <DriftMarker
       icon={L.icon({
-        iconUrl: iconUrls[type],
+        iconUrl: iconUrls[type][train.barrierFree ? 1 : 0],
         iconSize: [40, 26],
         className: arrivingIn ? "animate-pulse" : undefined,
       })}
@@ -37,6 +38,9 @@ export default function VehicleMarker({ type, train }: Props) {
           <>
             <br /> Arriving in &lt; {arrivingIn}s
           </>
+        )}
+        {train.barrierFree && (
+          <Accessibility className="bg-blue-600 rounded-full stroke-white p-[2px] size-5 mt-1" />
         )}
       </Popup>
     </DriftMarker>

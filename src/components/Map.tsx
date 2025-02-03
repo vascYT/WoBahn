@@ -1,7 +1,7 @@
 import { MapContainer, Polyline, TileLayer } from "react-leaflet";
 import LineSelector from "./LineSelector";
 import VehicleMarker from "./VehicleMarker";
-import StopMarker from "./StopMarker";
+import StationMarker from "./StationMarker";
 import { useLineStore } from "../hooks/useLineStore";
 import lines from "../utils/lines";
 import useLine from "../hooks/useLine";
@@ -31,7 +31,7 @@ export default function Map() {
               positions={data.stations.map((s) => s.coordinates)}
             />
             {data.stations.map((s, i) => (
-              <StopMarker key={i} type={lines[lineId].type} station={s} />
+              <StationMarker key={i} type={lines[lineId].type} station={s} />
             ))}
             {data.trains.map((t, i) => (
               // Index really not ideal as a key, but I don't have a unique id for each train
