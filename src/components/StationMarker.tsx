@@ -3,6 +3,7 @@ import { Marker, Popup } from "react-leaflet";
 import { getRelativeSeconds } from "../utils/misc";
 import type { LineType, Station } from "../types/api";
 import useCountdown from "../hooks/useCountdown";
+import { Accessibility } from "lucide-react";
 
 const iconUrls: Record<LineType, string> = {
   metro: "/icons/metro-station.svg",
@@ -15,7 +16,7 @@ interface Props {
   station: Station;
 }
 
-export default function StopMarker({ type, station }: Props) {
+export default function StationMarker({ type, station }: Props) {
   const nextDepature = useCountdown(
     station.nextDepature
       ? getRelativeSeconds(new Date(station.nextDepature))
@@ -34,6 +35,9 @@ export default function StopMarker({ type, station }: Props) {
         {station.description}
         <br />
         Next depature: {nextDepature}s
+        {station.barrierFree && (
+          <Accessibility className="bg-blue-600 rounded-full stroke-white p-[2px] size-5 mt-1" />
+        )}
       </Popup>
     </Marker>
   );
