@@ -7,7 +7,7 @@ title: About
 "WoBahn", derived from the German phrase "Wo ist meine Bahn?" ("Where is my train?"), is a small project meant to visualize the approximate locations of all metro lines in Vienna.
 
 ### How does it work?
-As there is no dataset that provides any geolocations for trains in Vienna, we use the real-time monitor data instead. This dataset gives us with a departure countdown (in minutes) for any station we want. When you look at all the stations for a line in order, it's fairly easy to see where a train should be. If the countdown suddenly drops from one station to another, you can be sure that a train has to be between those two stations; if the countdown is exactly 0, a train is in the station.
+As there is no dataset that provides any geolocations for trains in Vienna, we use the real-time monitor data instead. This dataset gives us a departure countdown (in minutes) for any station we want. When you look at all the stations for a line in order, it's fairly easy to see where a train should be. If the countdown suddenly drops from one station to another, you can be sure that a train has to be between those two stations; if the countdown is exactly 0, a train is in the station.
 
 Here is an example for the U4 Heiligenstadt line:
 ![Console output](https://r2.vasc.dev/images/8GPON.png)
