@@ -1,5 +1,9 @@
 import EventEmitter from "events";
-import { fetchMonitors, getLine } from "../utils/server/wiener-linien";
+import {
+  fetchMonitors,
+  getCachedLine,
+  getLine,
+} from "../utils/server/wiener-linien";
 import type { LineRes } from "../types/api";
 
 type Callback = (data: LineRes) => void;
@@ -23,8 +27,8 @@ export class LocationController {
     );
 
     // Send data if we already have it
-    const data = getLine(line);
-    if (data.stations.length > 0 && data.trains.length > 0) {
+    const data = getCachedLine(line);
+    if (data) {
       callback(data);
     }
   }

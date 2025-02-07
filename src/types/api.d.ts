@@ -18,8 +18,10 @@ export type Station = {
 };
 
 export type Train = {
+  id: string;
   description: string;
   coordinates: LatLngExpression;
   arrivingAt: string | null;
   barrierFree: boolean;
+  nextStopId: id;
 };

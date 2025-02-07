@@ -1,12 +1,41 @@
-import type { Station, Train } from "../../types/api";
+import type { LineRes, Station, Train } from "../../types/api";
 import type {
   DepartureTime,
   MonitorRes,
   TrafficInfo,
 } from "../../types/wiener_linien";
 import lines from "../lines";
+import { v4 as uuidv4 } from "uuid";
 
 let cachedMonitorsRes: MonitorRes | null;
+let cachedLines: { [lineKey: string]: LineRes } = {};
+
+export function getTrainId(
+  lineKey: string,
+  stopId: number,
+  currentTrains: Train[]
+) {
+  const cachedLine = cachedLines[lineKey];
+  if (!cachedLine) return uuidv4();
+
+  const stops = lines[lineKey].stops;
+
+  const stopIdIndex = stops.indexOf(stopId);
+  const nextStopId =
+    stopIdIndex !== -1 && stopIdIndex !== stops.length - 1
+      ? stops[stopIdIndex + 1]
+      : -1;
+
+  const existingTrain = cachedLine.trains.find(
+    (train) =>
+      (train.nextStopId === nextStopId || train.nextStopId === stopId) &&
+      !currentTrains.map((t) => t.id).includes(train.id)
+  );
+  console.log(`Existing train identified for ${existingTrain?.id}`);
+
+  return existingTrain ? existingTrain.id : uuidv4();
+}
+
 export async function fetchMonitors(lineKeys: string[]) {
   let url =
     "https://www.wienerlinien.at/ogd_realtime/monitor?activateTrafficInfo=stoerunglang&";
@@ -24,15 +53,23 @@ export async function fetchMonitors(lineKeys: string[]) {
   cachedMonitorsRes = await res.json();
 }
 
+export function getCachedLine(lineKey: string) {
+  const cachedLine = cachedLines[lineKey];
+
+  return cachedLine;
+}
+
 export function getLine(lineKey: string) {
   const { stations, trains } = getCoordinates(lineKey);
   const trafficInfos = getTrafficInfos(lineKey);
 
-  return {
+  cachedLines[lineKey] = {
     stations,
     trains,
     trafficInfos,
   };
+
+  return cachedLines[lineKey];
 }
 
 const getNextDepatureDate = (departure: DepartureTime) =>
@@ -87,13 +124,17 @@ export function getCoordinates(lineKey: string) {
       barrierFree: monitor.lines[0].barrierFree,
     });
 
+    const nextStopId =
+      i !== line.stops.length - 1 ? line.stops[i + 1] : line.stops[i];
     if (departure.departureTime.countdown == 0) {
       // Train at current stop
       trains.push({
+        id: getTrainId(lineKey, stopId, trains),
         description: `At ${monitor.locationStop.properties.title}`,
         arrivingAt: null,
         coordinates: [lat, lng],
         barrierFree: monitor.lines[0].barrierFree,
+        nextStopId,
       });
     } else if (
       previousDepature.departureTime.countdown >=
@@ -101,10 +142,12 @@ export function getCoordinates(lineKey: string) {
     ) {
       // Train between previous and current stop
       trains.push({
+        id: getTrainId(lineKey, stopId, trains),
         description: `Next stop: ${monitor.locationStop.properties.title}`,
         arrivingAt: getNextDepatureDate(departure.departureTime),
         coordinates: [(prvLat + lat) / 2, (prvLng + lng) / 2],
         barrierFree: monitor.lines[0].barrierFree,
+        nextStopId,
       });
     }
   }

@@ -23,6 +23,7 @@
     "react-leaflet-drift-marker": "^4.0.0",
     "sharp": "^0.33.5",
     "tailwindcss": "^3.4.17",
+    "uuid": "^11.0.5",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

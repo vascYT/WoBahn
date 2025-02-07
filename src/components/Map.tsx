@@ -33,9 +33,8 @@ export default function Map() {
             {data.stations.map((s, i) => (
               <StationMarker key={i} type={lines[lineId].type} station={s} />
             ))}
-            {data.trains.map((t, i) => (
-              // Index really not ideal as a key, but I don't have a unique id for each train
-              <VehicleMarker key={i} type={lines[lineId].type} train={t} />
+            {data.trains.map((t) => (
+              <VehicleMarker key={t.id} type={lines[lineId].type} train={t} />
             ))}
           </>
         ) : (
