@@ -1,13 +1,13 @@
 import type { LineRes, Station, Train } from "../../types/api";
 import type {
   DepartureTime,
+  Monitor,
   MonitorRes,
   TrafficInfo,
 } from "../../types/wiener_linien";
 import lines from "../lines";
 import { v4 as uuidv4 } from "uuid";
 
-let cachedMonitorsRes: MonitorRes | null;
 let cachedLines: { [lineKey: string]: LineRes } = {};
 
 export function getTrainId(
@@ -50,7 +50,9 @@ export async function fetchMonitors(lineKeys: string[]) {
   console.log(`Refetching ${url}`);
 
   const res = await fetch(url);
-  cachedMonitorsRes = await res.json();
+  const data = await res.json();
+
+  return data as MonitorRes;
 }
 
 export function getCachedLine(lineKey: string) {
@@ -59,9 +61,14 @@ export function getCachedLine(lineKey: string) {
   return cachedLine;
 }
 
-export function getLine(lineKey: string) {
-  const { stations, trains } = getCoordinates(lineKey);
-  const trafficInfos = getTrafficInfos(lineKey);
+export function parseLine(monitorRes: MonitorRes, lineKey: string) {
+  const { stations, trains } = parseCoordinates(
+    monitorRes.data.monitors,
+    lineKey
+  );
+  const trafficInfos = monitorRes.data.trafficInfos
+    ? parseTrafficInfos(monitorRes.data.trafficInfos, lineKey)
+    : [];
 
   cachedLines[lineKey] = {
     stations,
@@ -77,9 +84,8 @@ const getNextDepatureDate = (departure: DepartureTime) =>
     ? new Date(departure.timeReal).toISOString()
     : new Date(Date.now() + departure.countdown * 60 * 1000).toISOString();
 
-export function getCoordinates(lineKey: string) {
+export function parseCoordinates(monitors: Monitor[], lineKey: string) {
   const line = lines[lineKey];
-  const monitors = cachedMonitorsRes?.data.monitors ?? [];
 
   // Get train coordinates
   const stations: Station[] = [];
@@ -155,14 +161,15 @@ export function getCoordinates(lineKey: string) {
   return { stations, trains };
 }
 
-export function getTrafficInfos(lineKey: string) {
-  if (!cachedMonitorsRes || !cachedMonitorsRes.data.trafficInfos) return [];
-
+export function parseTrafficInfos(
+  trafficInfos: TrafficInfo[],
+  lineKey: string
+) {
   const stopIds = lines[lineKey].stops;
 
-  const trafficInfos: TrafficInfo[] = [];
+  const data: TrafficInfo[] = [];
   for (const stopId of stopIds) {
-    for (const trafficInfo of cachedMonitorsRes.data.trafficInfos) {
+    for (const trafficInfo of trafficInfos) {
       if (
         trafficInfo.relatedStops.includes(stopId) &&
         !trafficInfos
@@ -174,5 +181,5 @@ export function getTrafficInfos(lineKey: string) {
     }
   }
 
-  return trafficInfos;
+  return data;
 }

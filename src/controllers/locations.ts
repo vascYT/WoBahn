@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import {
   fetchMonitors,
   getCachedLine,
-  getLine,
+  parseLine,
 } from "../lib/server/wiener-linien";
 import type { LineRes } from "../types/api";
 
@@ -59,11 +59,11 @@ export class LocationController {
         const lines = this.emitter.eventNames() as string[];
 
         // Refetch data with currently subscribed lines
-        await fetchMonitors(lines);
+        const monitorRes = await fetchMonitors(lines);
 
         for (const line of lines) {
           try {
-            const data = getLine(line);
+            const data = parseLine(monitorRes, line);
             this.emitter.emit(line, data);
           } catch (e) {
             console.error("Couldn't get coords", e);
