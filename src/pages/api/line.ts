@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import lines from "../../utils/lines";
+import lines from "../../lib/lines";
 import { LocationController } from "../../controllers/locations";
 import type { LineRes } from "../../types/api";
 

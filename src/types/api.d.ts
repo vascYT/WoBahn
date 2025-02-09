@@ -1,5 +1,5 @@
 import type { LatLngExpression } from "leaflet";
-import type lines from "../utils/lines";
+import type lines from "../lib/lines";
 import type { TrafficInfo } from "./wiener_linien";
 
 export type LineRes = {

@@ -1,7 +1,7 @@
 import { AlertCircle } from "lucide-react";
 import { useLineStore } from "../hooks/useLineStore";
 import type { TrafficInfo } from "../types/wiener_linien";
-import lines from "../utils/lines";
+import lines from "../lib/lines";
 
 interface Props {
   trafficInfos: TrafficInfo[];

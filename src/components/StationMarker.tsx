@@ -1,6 +1,6 @@
 import L from "leaflet";
 import { Marker, Popup } from "react-leaflet";
-import { getRelativeSeconds } from "../utils/misc";
+import { getRelativeSeconds } from "@/lib/utils";
 import type { LineType, Station } from "../types/api";
 import useCountdown from "../hooks/useCountdown";
 import { Accessibility } from "lucide-react";

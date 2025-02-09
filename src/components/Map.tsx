@@ -3,7 +3,7 @@ import LineSelector from "./LineSelector";
 import VehicleMarker from "./VehicleMarker";
 import StationMarker from "./StationMarker";
 import { useLineStore } from "../hooks/useLineStore";
-import lines from "../utils/lines";
+import lines from "../lib/lines";
 import useLine from "../hooks/useLine";
 import LoadingOverlay from "./LoadingOverlay";
 

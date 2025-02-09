@@ -2,7 +2,7 @@ import L from "leaflet";
 import { Popup } from "react-leaflet";
 import type { LineType, Train } from "../types/api";
 import DriftMarker from "react-leaflet-drift-marker";
-import { getRelativeSeconds } from "../utils/misc";
+import { getRelativeSeconds } from "@/lib/utils";
 import useCountdown from "../hooks/useCountdown";
 import { Accessibility } from "lucide-react";
 

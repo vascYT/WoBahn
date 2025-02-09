@@ -3,7 +3,7 @@ import {
   fetchMonitors,
   getCachedLine,
   getLine,
-} from "../utils/server/wiener-linien";
+} from "../lib/server/wiener-linien";
 import type { LineRes } from "../types/api";
 
 type Callback = (data: LineRes) => void;
