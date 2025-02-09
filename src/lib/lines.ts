@@ -2,10 +2,11 @@ import type { LineType } from "../types/api";
 
 export default {
   "u1-leopoldau": {
-    name: "U1 Leopoldau",
     type: "metro",
     lineId: 301,
+    lineLabel: "U1",
     direction: "H",
+    directionLabel: "Leopoldau",
     color: "#e30413",
     stops: [
       4134, 4135, 4136, 4137, 4138, 4101, 4103, 4105, 4107, 4109, 4111, 4113,
@@ -13,10 +14,11 @@ export default {
     ],
   },
   "u1-oberlaa": {
-    name: "U1 Oberlaa",
     type: "metro",
     lineId: 301,
+    lineLabel: "U1",
     direction: "R",
+    directionLabel: "Oberlaa",
     color: "#e30413",
     stops: [
       4190, 4189, 4188, 4187, 4186, 4102, 4104, 4106, 4108, 4110, 4112, 4114,
@@ -24,10 +26,11 @@ export default {
     ],
   },
   "u2-karlsplatz": {
-    name: "U2 Karlsplatz",
     type: "metro",
     lineId: 302,
+    lineLabel: "U2",
     direction: "H",
+    directionLabel: "Karlsplatz",
     color: "#9766ae",
     stops: [
       4277, 4278, 4279, 4251, 4252, 4253, 4254, 4256, 4255, 4257, 4258, 4259,
@@ -35,10 +38,11 @@ export default {
     ],
   },
   "u2-seestadt": {
-    name: "U2 Seestadt",
     type: "metro",
     lineId: 302,
+    lineLabel: "U2",
     direction: "R",
+    directionLabel: "Seestadt",
     color: "#9766ae",
     stops: [
       4202, 4204, 4206, 4210, 4212, 4214, 4262, 4263, 4264, 4265, 4266, 4268,
@@ -49,7 +53,9 @@ export default {
     name: "U3 Simmering",
     type: "metro",
     lineId: 303,
+    lineLabel: "U3",
     direction: "H",
+    directionLabel: "Simmering",
     color: "#e87f10",
     stops: [
       4931, 4932, 4933, 4926, 4927, 4921, 4922, 4923, 4909, 4910, 4911, 4912,
@@ -57,10 +63,11 @@ export default {
     ],
   },
   "u3-ottakring": {
-    name: "U3 Ottakring",
     type: "metro",
     lineId: 303,
+    lineLabel: "U3",
     direction: "R",
+    directionLabel: "Ottakring",
     color: "#e87f10",
     stops: [
       4938, 4939, 4940, 4941, 4900, 4901, 4902, 4903, 4904, 4905, 4906, 4907,
@@ -68,10 +75,11 @@ export default {
     ],
   },
   "u4-heiligenstadt": {
-    name: "U4 Heiligenstadt",
     type: "metro",
     lineId: 304,
+    lineLabel: "U4",
     direction: "H",
+    directionLabel: "Heiligenstadt",
     color: "#04943c",
     stops: [
       4401, // Hütteldorf
@@ -97,10 +105,11 @@ export default {
     ],
   },
   "u4-huetteldorf": {
-    name: "U4 Hütteldorf",
     type: "metro",
     lineId: 304,
+    lineLabel: "U4",
     direction: "R",
+    directionLabel: "Hütteldorf",
     color: "#04943c",
     stops: [
       4402, // Heiligenstadt
@@ -127,10 +136,11 @@ export default {
     ],
   },
   "u6-floridsdorf": {
-    name: "U6 Floridsdorf",
     type: "metro",
     lineId: 306,
+    lineLabel: "U6",
     direction: "H",
+    directionLabel: "Floridsdorf",
     color: "#9c6c2c",
     stops: [
       4635, 4636, 4637, 4638, 4639, 4640, 4615, 4616, 4617, 4618, 4619, 4620,
@@ -138,10 +148,11 @@ export default {
     ],
   },
   "u6-siebenhirten": {
-    name: "U6 Siebenhirten",
     type: "metro",
     lineId: 306,
+    lineLabel: "U6",
     direction: "R",
+    directionLabel: "Siebenhirten",
     color: "#9c6c2c",
     stops: [
       4646, 4647, 4648, 4649, 4650, 4651, 4603, 4604, 4605, 4606, 4607, 4608,
@@ -150,10 +161,11 @@ export default {
   },
 } as {
   [line: string]: {
-    name: string;
     type: LineType;
     lineId: number;
+    lineLabel: string;
     direction: "H" | "R";
+    directionLabel: string;
     color: string;
     stops: number[];
   };

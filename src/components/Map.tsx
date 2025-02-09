@@ -6,6 +6,7 @@ import { useLineStore } from "../hooks/useLineStore";
 import lines from "../lib/lines";
 import useLine from "../hooks/useLine";
 import LoadingOverlay from "./LoadingOverlay";
+import TrafficInfos from "./TrafficInfos";
 
 export default function Map() {
   const data = useLine();
@@ -19,7 +20,12 @@ export default function Map() {
         zoom={13}
         minZoom={12}
       >
-        <LineSelector trafficInfos={data?.trafficInfos ?? []} />
+        <div className="absolute top-0 right-0 z-[600] flex flex-col items-end p-1">
+          <LineSelector />
+          {data?.trafficInfos && (
+            <TrafficInfos trafficInfos={data.trafficInfos} />
+          )}
+        </div>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Data source: <a href="https://data.wien.gv.at">Stadt Wien</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
