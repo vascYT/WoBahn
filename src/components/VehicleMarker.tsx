@@ -1,11 +1,11 @@
-import L from "leaflet";
+import L, { type LatLngTuple } from "leaflet";
 import { Popup } from "react-leaflet";
 import type { LineType, Train } from "../types/api";
 import DriftMarker from "react-leaflet-drift-marker";
 import { getRelativeSeconds } from "@/lib/utils";
 import useCountdown from "../hooks/useCountdown";
 import { Accessibility } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const iconUrls: Record<LineType, string[]> = {
   metro: ["/icons/silberpfeil.png", "/icons/felix.png"],
@@ -22,13 +22,24 @@ export default function VehicleMarker({ type, train }: Props) {
   const arrivingIn = useCountdown(
     train.arrivingAt ? getRelativeSeconds(new Date(train.arrivingAt)) : 0
   );
-  const [position, setPosition] = useState(train.previousStopCoords);
+  const [position, setPosition] = useState<LatLngTuple>(
+    train.previousStopCoords
+  );
   const [duration, setDuration] = useState(500);
+  const [isMoving, setIsMoving] = useState(false);
+  const marker = useRef<any>(null);
 
   useEffect(() => {
+    if (
+      (isMoving && train.arrivingAt !== null) ||
+      (!isMoving && train.arrivingAt === null)
+    )
+      return;
+
+    setIsMoving(true);
     setDuration(
       train.arrivingAt
-        ? getRelativeSeconds(new Date(train.arrivingAt)) * 750
+        ? (getRelativeSeconds(new Date(train.arrivingAt)) - 10) * 1000
         : 500
     );
     setPosition(train.nextStopCoords);
@@ -36,6 +47,7 @@ export default function VehicleMarker({ type, train }: Props) {
 
   return (
     <DriftMarker
+      ref={marker}
       icon={L.icon({
         iconUrl: iconUrls[type][train.barrierFree ? 1 : 0],
         iconSize: [40, 26],
@@ -43,6 +55,11 @@ export default function VehicleMarker({ type, train }: Props) {
       })}
       duration={duration}
       position={position}
+      eventHandlers={{
+        moveend: () => {
+          setIsMoving(false);
+        },
+      }}
     >
       <Popup>
         {train.description}
