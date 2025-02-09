@@ -5,6 +5,7 @@ import DriftMarker from "react-leaflet-drift-marker";
 import { getRelativeSeconds } from "@/lib/utils";
 import useCountdown from "../hooks/useCountdown";
 import { Accessibility } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const iconUrls: Record<LineType, string[]> = {
   metro: ["/icons/silberpfeil.png", "/icons/felix.png"],
@@ -21,6 +22,17 @@ export default function VehicleMarker({ type, train }: Props) {
   const arrivingIn = useCountdown(
     train.arrivingAt ? getRelativeSeconds(new Date(train.arrivingAt)) : 0
   );
+  const [position, setPosition] = useState(train.previousStopCoords);
+  const [duration, setDuration] = useState(500);
+
+  useEffect(() => {
+    setDuration(
+      train.arrivingAt
+        ? getRelativeSeconds(new Date(train.arrivingAt)) * 750
+        : 500
+    );
+    setPosition(train.nextStopCoords);
+  }, [train.nextStopCoords]);
 
   return (
     <DriftMarker
@@ -29,8 +41,8 @@ export default function VehicleMarker({ type, train }: Props) {
         iconSize: [40, 26],
         className: arrivingIn ? "animate-pulse" : undefined,
       })}
-      duration={1000}
-      position={train.coordinates}
+      duration={duration}
+      position={position}
     >
       <Popup>
         {train.description}

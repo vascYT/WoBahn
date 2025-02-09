@@ -31,7 +31,6 @@ export function getTrainId(
       (train.nextStopId === nextStopId || train.nextStopId === stopId) &&
       !currentTrains.map((t) => t.id).includes(train.id)
   );
-  console.log(`Existing train identified for ${existingTrain?.id}`);
 
   return existingTrain ? existingTrain.id : uuidv4();
 }
@@ -138,7 +137,8 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
         id: getTrainId(lineKey, stopId, trains),
         description: `At ${monitor.locationStop.properties.title}`,
         arrivingAt: null,
-        coordinates: [lat, lng],
+        previousStopCoords: [prvLat, prvLng],
+        nextStopCoords: [lat, lng],
         barrierFree: monitor.lines[0].barrierFree,
         nextStopId,
       });
@@ -151,7 +151,8 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
         id: getTrainId(lineKey, stopId, trains),
         description: `Next stop: ${monitor.locationStop.properties.title}`,
         arrivingAt: getNextDepatureDate(departure.departureTime),
-        coordinates: [(prvLat + lat) / 2, (prvLng + lng) / 2],
+        previousStopCoords: [prvLat, prvLng],
+        nextStopCoords: [lat, lng],
         barrierFree: monitor.lines[0].barrierFree,
         nextStopId,
       });
