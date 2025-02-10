@@ -58,16 +58,16 @@ export class LocationController {
       if (subscriberCount > 0) {
         const lines = this.emitter.eventNames() as string[];
 
-        // Refetch data with currently subscribed lines
-        const monitorRes = await fetchMonitors(lines);
+        try {
+          // Refetch data with currently subscribed lines
+          const monitorRes = await fetchMonitors(lines);
 
-        for (const line of lines) {
-          try {
+          for (const line of lines) {
             const data = parseLine(monitorRes, line);
             this.emitter.emit(line, data);
-          } catch (e) {
-            console.error("Couldn't get coords", e);
           }
+        } catch (e) {
+          console.error("Error refetching monitors");
         }
       } else {
         this.stopUpdates();
