@@ -6,7 +6,6 @@ import type {
   TrafficInfo,
 } from "../../types/wiener_linien";
 import lines from "../lines";
-import { v4 as uuidv4 } from "uuid";
 
 let cachedLines: { [lineKey: string]: LineRes } = {};
 
@@ -16,7 +15,7 @@ export function getTrainId(
   currentTrains: Train[]
 ) {
   const cachedLine = cachedLines[lineKey];
-  if (!cachedLine) return uuidv4();
+  if (!cachedLine) return crypto.randomUUID();
 
   const stops = lines[lineKey].stops;
 
@@ -32,7 +31,7 @@ export function getTrainId(
       !currentTrains.map((t) => t.id).includes(train.id)
   );
 
-  return existingTrain ? existingTrain.id : uuidv4();
+  return existingTrain ? existingTrain.id : crypto.randomUUID();
 }
 
 export async function fetchMonitors(lineKeys: string[]) {
