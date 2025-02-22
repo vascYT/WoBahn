@@ -32,6 +32,11 @@ export default function StationMarker({ type, station }: Props) {
       position={station.coordinates}
     >
       <Popup>
+        {import.meta.env.DEV && (
+          <>
+            {station.id} <br />
+          </>
+        )}
         {station.description}
         <br />
         Next depature: {nextDepature}s

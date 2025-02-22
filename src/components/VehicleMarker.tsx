@@ -63,7 +63,8 @@ export default function VehicleMarker({ type, train }: Props) {
         {import.meta.env.DEV && (
           <>
             {train.id} <br />
-            {train.nextStopId} <br />
+            Next stop: {train.nextStopId} <br />
+            Current stop: {train.currentStopId} <br />
           </>
         )}
         {train.description}

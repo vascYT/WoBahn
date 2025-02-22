@@ -107,6 +107,7 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
     // Save station coordinates
     if (i == 1) {
       stations.push({
+        id: previousMonitor.locationStop.properties.attributes.rbl,
         description: previousMonitor.locationStop.properties.title,
         nextDepature: getNextDepatureDate(previousDepature.departureTime),
         coordinates: [prvLat, prvLng],
@@ -115,6 +116,7 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
     }
 
     stations.push({
+      id: monitor.locationStop.properties.attributes.rbl,
       description: monitor.locationStop.properties.title,
       nextDepature: getNextDepatureDate(departure.departureTime),
       coordinates: [lat, lng],
@@ -130,7 +132,7 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
         id: getTrainId(lineKey, stopId, nextStopId, trains),
         description: `At ${monitor.locationStop.properties.title}`,
         arrivingAt: null,
-        previousCoords: [prvLat, prvLng],
+        previousCoords: [lat, lng],
         nextCoords: [lat, lng],
         barrierFree: monitor.lines[0].barrierFree,
         currentStopId: stopId,

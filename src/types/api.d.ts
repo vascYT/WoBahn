@@ -11,6 +11,7 @@ export type LineRes = {
 export type LineType = "metro" | "tram" | "bus";
 
 export type Station = {
+  id: number;
   description: string;
   coordinates: LatLngTuple;
   nextDepature: string | null;
