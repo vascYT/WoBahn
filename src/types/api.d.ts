@@ -20,9 +20,10 @@ export type Station = {
 export type Train = {
   id: string;
   description: string;
-  previousStopCoords: LatLngTuple;
-  nextStopCoords: LatLngTuple;
+  previousCoords: LatLngTuple;
+  nextCoords: LatLngTuple;
   arrivingAt: string | null;
   barrierFree: boolean;
-  nextStopId: id;
+  currentStopId: number | null;
+  nextStopId: number;
 };

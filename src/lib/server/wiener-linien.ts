@@ -11,23 +11,16 @@ let cachedLines: { [lineKey: string]: LineRes } = {};
 
 export function getTrainId(
   lineKey: string,
-  stopId: number,
+  currentStopId: number | null,
+  nextStopId: number,
   currentTrains: Train[]
 ) {
   const cachedLine = cachedLines[lineKey];
   if (!cachedLine) return crypto.randomUUID();
 
-  const stops = lines[lineKey].stops;
-
-  const stopIdIndex = stops.indexOf(stopId);
-  const nextStopId =
-    stopIdIndex !== -1 && stopIdIndex !== stops.length - 1
-      ? stops[stopIdIndex + 1]
-      : -1;
-
   const existingTrain = cachedLine.trains.find(
     (train) =>
-      (train.nextStopId === nextStopId || train.nextStopId === stopId) &&
+      (train.nextStopId === nextStopId || train.nextStopId === currentStopId) &&
       !currentTrains.map((t) => t.id).includes(train.id)
   );
 
@@ -128,17 +121,19 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
       barrierFree: monitor.lines[0].barrierFree,
     });
 
-    const nextStopId =
-      i !== line.stops.length - 1 ? line.stops[i + 1] : line.stops[i];
     if (departure.departureTime.countdown == 0) {
+      const nextStopId =
+        i !== line.stops.length - 1 ? line.stops[i + 1] : line.stops[i];
+
       // Train at current stop
       trains.push({
-        id: getTrainId(lineKey, stopId, trains),
+        id: getTrainId(lineKey, stopId, nextStopId, trains),
         description: `At ${monitor.locationStop.properties.title}`,
         arrivingAt: null,
-        previousStopCoords: [prvLat, prvLng],
-        nextStopCoords: [lat, lng],
+        previousCoords: [prvLat, prvLng],
+        nextCoords: [lat, lng],
         barrierFree: monitor.lines[0].barrierFree,
+        currentStopId: stopId,
         nextStopId,
       });
     } else if (
@@ -147,13 +142,14 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
     ) {
       // Train between previous and current stop
       trains.push({
-        id: getTrainId(lineKey, stopId, trains),
+        id: getTrainId(lineKey, null, stopId, trains),
         description: `Next stop: ${monitor.locationStop.properties.title}`,
         arrivingAt: getNextDepatureDate(departure.departureTime),
-        previousStopCoords: [prvLat, prvLng],
-        nextStopCoords: [lat, lng],
+        previousCoords: [prvLat, prvLng],
+        nextCoords: [lat, lng],
         barrierFree: monitor.lines[0].barrierFree,
-        nextStopId,
+        currentStopId: null,
+        nextStopId: stopId,
       });
     }
   }

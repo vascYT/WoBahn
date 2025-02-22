@@ -22,9 +22,7 @@ export default function VehicleMarker({ type, train }: Props) {
   const arrivingIn = useCountdown(
     train.arrivingAt ? getRelativeSeconds(new Date(train.arrivingAt)) : 0
   );
-  const [position, setPosition] = useState<LatLngTuple>(
-    train.previousStopCoords
-  );
+  const [position, setPosition] = useState<LatLngTuple>(train.previousCoords);
   const [duration, setDuration] = useState(500);
   const [isMoving, setIsMoving] = useState(false);
   const marker = useRef<any>(null);
@@ -42,8 +40,8 @@ export default function VehicleMarker({ type, train }: Props) {
         ? (getRelativeSeconds(new Date(train.arrivingAt)) - 10) * 1000
         : 500
     );
-    setPosition(train.nextStopCoords);
-  }, [train.nextStopCoords]);
+    setPosition(train.nextCoords);
+  }, [train.nextCoords]);
 
   return (
     <DriftMarker
@@ -62,6 +60,12 @@ export default function VehicleMarker({ type, train }: Props) {
       }}
     >
       <Popup>
+        {import.meta.env.DEV && (
+          <>
+            {train.id} <br />
+            {train.nextStopId} <br />
+          </>
+        )}
         {train.description}
         {train.arrivingAt && (
           <>
