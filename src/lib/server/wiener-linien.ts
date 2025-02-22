@@ -111,7 +111,7 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
         description: previousMonitor.locationStop.properties.title,
         nextDepature: getNextDepatureDate(previousDepature.departureTime),
         coordinates: [prvLat, prvLng],
-        barrierFree: previousMonitor.lines[0].barrierFree,
+        barrierFree: previousDepature.vehicle?.barrierFree ?? false,
       });
     }
 
@@ -120,7 +120,7 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
       description: monitor.locationStop.properties.title,
       nextDepature: getNextDepatureDate(departure.departureTime),
       coordinates: [lat, lng],
-      barrierFree: monitor.lines[0].barrierFree,
+      barrierFree: departure.vehicle?.barrierFree ?? false,
     });
 
     if (departure.departureTime.countdown == 0) {
@@ -134,7 +134,7 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
         arrivingAt: null,
         previousCoords: [lat, lng],
         nextCoords: [lat, lng],
-        barrierFree: monitor.lines[0].barrierFree,
+        barrierFree: departure.vehicle?.barrierFree ?? false,
         currentStopId: stopId,
         nextStopId,
       });
@@ -149,7 +149,7 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
         arrivingAt: getNextDepatureDate(departure.departureTime),
         previousCoords: [prvLat, prvLng],
         nextCoords: [lat, lng],
-        barrierFree: monitor.lines[0].barrierFree,
+        barrierFree: departure.vehicle?.barrierFree ?? false,
         currentStopId: null,
         nextStopId: stopId,
       });
