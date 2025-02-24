@@ -36,8 +36,8 @@ export default function Map() {
               pathOptions={{ color: lines[lineId].color }}
               positions={data.stations.map((s) => s.coordinates)}
             />
-            {data.stations.map((s, i) => (
-              <StationMarker key={i} type={lines[lineId].type} station={s} />
+            {data.stations.map((s) => (
+              <StationMarker key={s.id} type={lines[lineId].type} station={s} />
             ))}
             {data.trains.map((t) => (
               <VehicleMarker key={t.id} type={lines[lineId].type} train={t} />
