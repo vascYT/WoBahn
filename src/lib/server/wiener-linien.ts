@@ -7,7 +7,7 @@ import type {
 } from "../../types/wiener_linien";
 import lines from "../lines";
 
-let cachedLines: { [lineKey: string]: LineRes } = {};
+const cachedLines = new Map<string, LineRes>();
 
 export function getTrainId(
   lineKey: string,
@@ -15,7 +15,7 @@ export function getTrainId(
   nextStopId: number,
   currentTrains: Train[]
 ) {
-  const cachedLine = cachedLines[lineKey];
+  const cachedLine = cachedLines.get(lineKey);
   if (!cachedLine) return crypto.randomUUID();
 
   const existingTrain = cachedLine.trains.find(
@@ -47,9 +47,11 @@ export async function fetchMonitors(lineKeys: string[]) {
 }
 
 export function getCachedLine(lineKey: string) {
-  const cachedLine = cachedLines[lineKey];
+  return cachedLines.get(lineKey);
+}
 
-  return cachedLine;
+export function deleteCachedLine(lineKey: string) {
+  cachedLines.delete(lineKey);
 }
 
 export function parseLine(monitorRes: MonitorRes, lineKey: string) {
@@ -61,13 +63,14 @@ export function parseLine(monitorRes: MonitorRes, lineKey: string) {
     ? parseTrafficInfos(monitorRes.data.trafficInfos, lineKey)
     : [];
 
-  cachedLines[lineKey] = {
+  const line = {
     stations,
     trains,
     trafficInfos,
   };
+  cachedLines.set(lineKey, line);
 
-  return cachedLines[lineKey];
+  return line;
 }
 
 const getNextDepatureDate = (departure: DepartureTime) =>

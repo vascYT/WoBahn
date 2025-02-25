@@ -1,5 +1,6 @@
 import EventEmitter from "events";
 import {
+  deleteCachedLine,
   fetchMonitors,
   getCachedLine,
   parseLine,
@@ -38,6 +39,10 @@ export class LocationController {
     console.log(
       `unsubscribed from ${line}, current subscribers: ${this.getSubscriberCount()}`
     );
+
+    if (this.emitter.listenerCount(line) < 1) {
+      deleteCachedLine(line);
+    }
   }
 
   public getSubscriberCount() {
