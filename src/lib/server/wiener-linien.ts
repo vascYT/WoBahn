@@ -102,8 +102,8 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
     const departure = monitor.lines[0].departures.departure[0];
     const previousDepature = previousMonitor.lines[0].departures.departure[0];
 
-    const [prvLng, prvLat] = previousMonitor.locationStop.geometry.coordinates;
-    const [lng, lat] = monitor.locationStop.geometry.coordinates;
+    const [prvLat, prvLng] = previousMonitor.locationStop.geometry.coordinates;
+    const [lat, lng] = monitor.locationStop.geometry.coordinates;
 
     if (!(prvLng && prvLat && lng && lat)) continue; // skip, if we don't have coordinates
 
