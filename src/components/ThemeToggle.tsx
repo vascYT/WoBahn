@@ -22,7 +22,6 @@ export default function ThemeToggle() {
         } inline-block h-4 w-4 transform rounded-full bg-white dark:bg-zinc-900 transition-transform duration-200 ease-in-out shadow-sm`}
       />
       
-      {/* Icons */}
       <Sun
         className={`absolute left-1 h-3 w-3 text-yellow-500 transition-opacity duration-200 ${
           isDark ? 'opacity-0' : 'opacity-100'
