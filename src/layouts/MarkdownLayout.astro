@@ -6,7 +6,7 @@ const { frontmatter } = Astro.props;
 
 <Layout title={frontmatter.title}>
   <div
-    class="grow p-3 md:px-5 prose lg:prose-lg prose-h1:font-bold prose-h1:text-3xl prose-a:text-blue-600 prose-a:underline-offset-4 prose-p:text-justify prose-img:rounded-xl"
+    class="grow p-3 md:px-5 prose lg:prose-lg prose-h1:font-bold prose-h1:text-3xl prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:underline-offset-4 prose-p:text-justify prose-img:rounded-xl dark:prose-invert"
   >
     <slot />
   </div>
