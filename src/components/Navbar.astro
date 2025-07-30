@@ -2,13 +2,18 @@
 import { Image } from "astro:assets";
 import GithubIcon from "../assets/github.svg";
 import Logo from "../assets/wobahn.png";
+import ThemeToggle from "./ThemeToggle";
 ---
 
 <div
-  class="flex items-center h-12 md:h-16 px-3 md:px-6 text-black border-b border-black/50 bg-white"
+  class="flex items-center h-12 md:h-16 px-3 md:px-6 text-black dark:text-white border-b border-black/50 dark:border-white/20 bg-white dark:bg-zinc-950"
 >
   <a href="/" class="mr-5">
-    <Image src={Logo} alt="WoBahn Logo" class="w-28 object-contain" />
+    <Image 
+      src={Logo} 
+      alt="WoBahn Logo" 
+      class="w-28 object-contain filter dark:brightness-0 dark:invert" 
+    />
   </a>
 
   <div class="w-full space-x-6 child">
@@ -18,7 +23,12 @@ import Logo from "../assets/wobahn.png";
   <div class="flex items-center gap-3 shrink-0">
     <p class="text-sm opacity-70">v{__APP_VERSION__}</p>
     <a href="https://github.com/vascYT/WoBahn" target="_blank">
-      <Image src={GithubIcon} alt="Github icon" class="fill-black" />
+      <Image 
+        src={GithubIcon} 
+        alt="Github icon" 
+        class="w-6 h-6 filter dark:brightness-0 dark:invert" 
+      />
     </a>
+    <ThemeToggle client:load />
   </div>
 </div>

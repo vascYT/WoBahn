@@ -15,3 +15,36 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
+
+*, *::before, *::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.dark .leaflet-control-zoom a {
+  background-color: #27272a !important;
+  color: #f4f4f5 !important;
+  border-color: #3f3f46 !important;
+}
+
+.dark .leaflet-control-zoom a:hover {
+  background-color: #3f3f46 !important;
+  color: #ffffff !important;
+}
+
+.dark .leaflet-control-attribution {
+  background-color: rgba(39, 39, 42, 0.9) !important;
+  color: #d4d4d8 !important;
+}
+
+.dark .leaflet-control-attribution a {
+  color: #93c5fd !important;
+}
+
+.dark .leaflet-popup-content-wrapper {
+  background-color: #27272a !important;
+  color: #f4f4f5 !important;
+}
+
+.dark .leaflet-popup-tip {
+  background-color: #27272a !important;
+}

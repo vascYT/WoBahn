@@ -22,11 +22,19 @@ const { PUBLIC_PLAUSIBLE_URL, PUBLIC_PLAUSIBLE_DOMAIN } = import.meta.env;
         />
       )
     }
+    <script>
+      (function() {
+        const theme = localStorage.getItem('wobahn-theme') || 'system';
+        if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
     <title>
       {title ? `${title} • WoBahn` : "WoBahn"}
     </title>
   </head>
-  <body class="flex flex-col w-screen min-h-screen">
+  <body class="flex flex-col w-screen min-h-screen bg-white dark:bg-zinc-950 text-black dark:text-white">
     <Navbar />
     <slot />
   </body>
