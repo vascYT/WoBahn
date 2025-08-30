@@ -2,9 +2,13 @@
 export const prerender = true;
 
 import Layout from "../layouts/Layout.astro";
-import Map from "../components/Map";
+import MapView from "../components/MapView";
+import LineSheet from "@/components/LineSheet";
+import LineDetailSheet from "@/components/LineDetailSheet";
 ---
 
 <Layout>
-  <Map client:only />
+  <MapView client:only />
+  <LineSheet client:only />
+  <LineDetailSheet client:only />
 </Layout>

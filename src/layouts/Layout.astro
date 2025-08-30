@@ -1,7 +1,6 @@
 ---
 import "../styles/global.css";
-import "leaflet/dist/leaflet.css";
-import Navbar from "../components/Navbar.astro";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 const { title } = Astro.props;
 const { PUBLIC_PLAUSIBLE_URL, PUBLIC_PLAUSIBLE_DOMAIN } = import.meta.env;
@@ -27,7 +26,6 @@ const { PUBLIC_PLAUSIBLE_URL, PUBLIC_PLAUSIBLE_DOMAIN } = import.meta.env;
     </title>
   </head>
   <body class="flex flex-col w-screen min-h-screen">
-    <Navbar />
     <slot />
   </body>
 </html>

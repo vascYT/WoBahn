@@ -15,3 +15,8 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
+
+/* Workaround for https://github.com/emilkowalski/vaul/issues/492 */
+body {
+  pointer-events: all !important;
+}

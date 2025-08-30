@@ -6,6 +6,7 @@ export type LineRes = {
   stations: Station[];
   trains: Train[];
   trafficInfos: TrafficInfo[];
+  lastUpdate: string;
 };
 
 export type LineType = "metro" | "tram" | "bus";

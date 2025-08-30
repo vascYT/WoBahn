@@ -67,6 +67,7 @@ export function parseLine(monitorRes: MonitorRes, lineKey: string) {
     stations,
     trains,
     trafficInfos,
+    lastUpdate: new Date().toISOString(),
   };
   cachedLines.set(lineKey, line);
 
