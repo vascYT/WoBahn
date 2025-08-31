@@ -1,61 +1,34 @@
 import { Layer, Marker, Popup, Source } from "react-map-gl/maplibre";
-import MetroIcon from "../assets/felix.png";
+import FelixIcon from "../assets/felix.png";
+import SilberpfeilIcon from "../assets/silberpfeil.png";
 import StationIcon from "../assets/metro-station.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLineStore } from "@/hooks/useLineStore";
 import type { Station, Train } from "@/types/api";
 import { cn, getRelativeSeconds } from "@/lib/utils";
 import useCountdown from "@/hooks/useCountdown";
 import { Accessibility } from "lucide-react";
 import lines from "@/lib/lines";
+import type { AnimatedMarkerRef } from "./AnimatedMarker";
+import AnimatedMarker from "./AnimatedMarker";
 
 function VehicleMarker({ train }: { train: Train }) {
-  const [position, setPosition] = useState({
-    lat: train.previousCoords[0],
-    lng: train.previousCoords[1],
-  });
-  const [isMoving, setIsMoving] = useState(false);
+  const markerRef = useRef<AnimatedMarkerRef>(null);
   const arrivingIn = useCountdown(
     train.arrivingAt ? getRelativeSeconds(new Date(train.arrivingAt)) : 0
   );
-  const [isPopupShowing, setIsPopupShowing] = useState(false);
-
-  const moveMarker = (
-    newPos: { lat: number; lng: number },
-    duration: number
-  ) => {
-    setIsMoving(true);
-    const start = position;
-    const end = newPos;
-    const startTime = performance.now();
-
-    function animate(time: number) {
-      const t = Math.min((time - startTime) / duration, 1);
-      const lat = start.lat + (end.lat - start.lat) * t;
-      const lng = start.lng + (end.lng - start.lng) * t;
-      setPosition({ lat, lng });
-
-      if (t < 1) requestAnimationFrame(animate);
-      else setIsMoving(false);
-    }
-
-    requestAnimationFrame(animate);
-  };
 
   useEffect(() => {
-    if (
-      train.previousCoords[0] == train.nextCoords[0] &&
-      train.previousCoords[0] == train.nextCoords[0]
-    )
-      return;
+    if (!markerRef.current) return;
 
+    const isMoving = markerRef.current.isMoving();
     if (
       (isMoving && train.arrivingAt !== null) ||
       (!isMoving && train.arrivingAt === null)
     )
       return;
 
-    moveMarker(
+    markerRef.current.moveTo(
       {
         lat: train.nextCoords[0],
         lng: train.nextCoords[1],
@@ -64,47 +37,40 @@ function VehicleMarker({ train }: { train: Train }) {
         ? (getRelativeSeconds(new Date(train.arrivingAt)) - 10) * 1000
         : 500
     );
-  }, [train.nextCoords]);
+  }, [train.nextCoords, markerRef.current]);
 
   return (
     <>
-      <Marker
-        latitude={position.lat}
-        longitude={position.lng}
-        onClick={(e) => {
-          e.originalEvent.stopPropagation();
-          setIsPopupShowing(true);
-        }}
+      <AnimatedMarker
+        ref={markerRef}
+        popupContent={
+          <>
+            {import.meta.env.DEV && (
+              <>
+                {train.id} <br />
+                Next stop: {train.nextStopId} <br />
+                Current stop: {train.currentStopId} <br />
+              </>
+            )}
+            {train.description}
+            {train.arrivingAt && (
+              <>
+                <br /> Arriving in &lt; {arrivingIn}s
+              </>
+            )}
+            {train.barrierFree && (
+              <Accessibility className="bg-blue-600 rounded-full stroke-white p-[2px] size-5 mt-1" />
+            )}
+          </>
+        }
+        initialLat={train.previousCoords[0]}
+        initialLng={train.previousCoords[1]}
       >
         <img
-          src={MetroIcon.src}
+          src={train.barrierFree ? FelixIcon.src : SilberpfeilIcon.src}
           className={cn("w-10", train.arrivingAt && "animate-pulse")}
         />
-      </Marker>
-      {isPopupShowing && (
-        <Popup
-          latitude={position.lat}
-          longitude={position.lng}
-          onClose={() => setIsPopupShowing(false)}
-        >
-          {import.meta.env.DEV && (
-            <>
-              {train.id} <br />
-              Next stop: {train.nextStopId} <br />
-              Current stop: {train.currentStopId} <br />
-            </>
-          )}
-          {train.description}
-          {train.arrivingAt && (
-            <>
-              <br /> Arriving in &lt; {arrivingIn}s
-            </>
-          )}
-          {train.barrierFree && (
-            <Accessibility className="bg-blue-600 rounded-full stroke-white p-[2px] size-5 mt-1" />
-          )}
-        </Popup>
-      )}
+      </AnimatedMarker>
     </>
   );
 }
