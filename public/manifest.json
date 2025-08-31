@@ -32,5 +32,6 @@
       "sizes": "192x192",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "edge_side_panel": {}
 }
