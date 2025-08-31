@@ -4,7 +4,6 @@
   "description": "An app that displays the approximate locations of all metro lines in Vienna.",
   "start_url": "/",
   "display_override": [
-    "fullscreen",
     "window-controls-overlay"
   ],
   "display": "standalone",
