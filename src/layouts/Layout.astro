@@ -12,6 +12,7 @@ const { PUBLIC_PLAUSIBLE_URL, PUBLIC_PLAUSIBLE_DOMAIN } = import.meta.env;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
     {
       PUBLIC_PLAUSIBLE_URL && PUBLIC_PLAUSIBLE_DOMAIN && (
         <script
@@ -25,7 +26,7 @@ const { PUBLIC_PLAUSIBLE_URL, PUBLIC_PLAUSIBLE_DOMAIN } = import.meta.env;
       {title ? `${title} • WoBahn` : "WoBahn"}
     </title>
   </head>
-  <body class="flex flex-col w-screen min-h-screen">
+  <body class="flex flex-col min-h-screen">
     <slot />
   </body>
 </html>
