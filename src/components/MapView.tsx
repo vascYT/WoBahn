@@ -1,5 +1,8 @@
 import { useLineFetcher } from "@/hooks/useLineStore";
-import Map, { GeolocateControl } from "react-map-gl/maplibre";
+import Map, {
+  AttributionControl,
+  GeolocateControl,
+} from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { layers, namedFlavor } from "@protomaps/basemaps";
@@ -45,6 +48,7 @@ export default function MapView() {
         sprite: "https://protomaps.github.io/basemaps-assets/sprites/v4/light",
         layers: layers("vienna", namedFlavor("light"), { lang: "en" }),
       }}
+      attributionControl={false}
     >
       <LineMapOverlay />
       <GeolocateControl
@@ -52,6 +56,7 @@ export default function MapView() {
         showAccuracyCircle={false}
         positionOptions={{ enableHighAccuracy: true }}
       />
+      <AttributionControl position="top-left" compact />
     </Map>
   );
 }
