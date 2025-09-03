@@ -57,7 +57,7 @@ export default function LineSheet() {
           <div className="flex flex-col gap-3 items-center justify-center">
             <img src={Logo.src} alt="WoBahn Logo" className="w-28" />
             <div className="flex flex-row items-center justify-center gap-2 opacity-70">
-              <a href="/about" className="text-sm">
+              <a href="https://vasc.dev/posts/wobahn" className="text-sm">
                 About
               </a>
               <span>&bull;</span>
