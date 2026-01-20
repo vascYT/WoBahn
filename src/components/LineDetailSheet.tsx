@@ -58,7 +58,7 @@ export default function LineDetailSheet() {
             {activeRouteData ? <TrafficInfos /> : <Spinner />}
           </div>
           <p className="py-2 text-xs opacity-80 text-center">
-            Please keep in mind that the locations may not be accurate.
+            Please keep in mind that the locations may be inaccurate.
           </p>
         </DrawerContent>
       )}

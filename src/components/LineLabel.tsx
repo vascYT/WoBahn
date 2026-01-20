@@ -13,11 +13,6 @@ export default function LineLabel({ route }: { route: Route }) {
         {line.lineLabel}
       </span>
       {direction.directionLabel}
-      {line.type !== "ptMetro" && (
-        <span className="flex items-center justify-center w-8 h-4 rounded-xs font-semibold bg-linear-to-r from-orange-500 to-yellow-500 text-white text-xs">
-          Beta
-        </span>
-      )}
     </p>
   );
 }
