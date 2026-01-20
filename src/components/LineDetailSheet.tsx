@@ -2,21 +2,20 @@ import { useLineStore } from "@/hooks/useLineStore";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
 import TrafficInfos from "./TrafficInfos";
 import LineLabel from "./LineLabel";
-import lines from "@/lib/lines";
 import { useEffect, useState } from "react";
 import { getRelativeSecondsPast } from "@/lib/utils";
 import Spinner from "./ui/spinner";
 
 export default function LineDetailSheet() {
-  const activeLineId = useLineStore((state) => state.id);
-  const setActiveLineId = useLineStore((state) => state.setId);
+  const activeRoute = useLineStore((state) => state.activeRoute);
+  const setActiveRoute = useLineStore((state) => state.setActiveRoute);
   const activeLineData = useLineStore((state) => state.data);
   const [lastUpdateSec, setLastUpdateSec] = useState<number | null>(null);
 
   useEffect(() => {
     const updateCounter = () => {
       setLastUpdateSec(
-        getRelativeSecondsPast(new Date(activeLineData!.lastUpdate))
+        getRelativeSecondsPast(new Date(activeLineData!.lastUpdate)),
       );
     };
 
@@ -35,24 +34,20 @@ export default function LineDetailSheet() {
 
   return (
     <Drawer
-      open={!!activeLineId}
+      open={!!activeRoute}
       onOpenChange={(open) => {
-        if (!open) setActiveLineId(null);
+        if (!open) setActiveRoute(null);
       }}
       modal={false}
     >
-      {activeLineId && (
+      {activeRoute && (
         <DrawerContent className="mx-2">
           <DrawerHeader>
             <DrawerTitle>
               <div className="flex items-center">
-                <LineLabel
-                  line={lines[activeLineId].lineLabel}
-                  direction={lines[activeLineId].directionLabel}
-                  color={lines[activeLineId].color}
-                />
+                <LineLabel route={activeRoute} />
                 {lastUpdateSec != null && (
-                  <p className="text-sm font-normal opacity-90 w-full text-right">
+                  <p className="w-full text-right opacity-90 text-sm font-normal">
                     Last update {lastUpdateSec}s ago
                   </p>
                 )}
@@ -62,6 +57,9 @@ export default function LineDetailSheet() {
           <div className="min-h-20">
             {activeLineData ? <TrafficInfos /> : <Spinner />}
           </div>
+          <p className="py-2 text-xs opacity-80 text-center">
+            Please keep in mind that the locations may not be accurate.
+          </p>
         </DrawerContent>
       )}
     </Drawer>

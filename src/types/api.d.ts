@@ -9,7 +9,12 @@ export type LineRes = {
   lastUpdate: string;
 };
 
-export type LineType = "metro" | "tram" | "bus";
+export type LineType =
+  | "ptTramWLB"
+  | "ptMetro"
+  | "ptTram"
+  | "ptBusCity"
+  | "ptBusNight";
 
 export type Station = {
   id: number;

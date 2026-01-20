@@ -8,14 +8,13 @@ import type { Station, Train } from "@/types/api";
 import { cn, getRelativeSeconds } from "@/lib/utils";
 import useCountdown from "@/hooks/useCountdown";
 import { Accessibility } from "lucide-react";
-import lines from "@/lib/lines";
 import type { AnimatedMarkerRef } from "./AnimatedMarker";
 import AnimatedMarker from "./AnimatedMarker";
 
 function VehicleMarker({ train }: { train: Train }) {
   const markerRef = useRef<AnimatedMarkerRef>(null);
   const arrivingIn = useCountdown(
-    train.arrivingAt ? getRelativeSeconds(new Date(train.arrivingAt)) : 0
+    train.arrivingAt ? getRelativeSeconds(new Date(train.arrivingAt)) : 0,
   );
 
   useEffect(() => {
@@ -35,7 +34,7 @@ function VehicleMarker({ train }: { train: Train }) {
       },
       train.arrivingAt
         ? (getRelativeSeconds(new Date(train.arrivingAt)) - 10) * 1000
-        : 500
+        : 500,
     );
   }, [train.nextCoords, markerRef.current]);
 
@@ -106,7 +105,7 @@ function StationPopup({
   const nextDepature = useCountdown(
     station.nextDepature
       ? getRelativeSeconds(new Date(station.nextDepature))
-      : 0
+      : 0,
   );
 
   return (
@@ -132,11 +131,11 @@ function StationPopup({
 }
 
 export default function LineMapOverlay() {
-  const activeLineId = useLineStore((state) => state.id);
+  const activeLine = useLineStore((state) => state.activeRoute);
   const activeLineData = useLineStore((state) => state.data);
   const [activeStation, setActiveStation] = useState<Station | null>(null);
 
-  if (!activeLineData || !activeLineId) return <></>;
+  if (!activeLineData || !activeLine) return <></>;
 
   return (
     <>
@@ -163,7 +162,7 @@ export default function LineMapOverlay() {
             "line-cap": "round",
           }}
           paint={{
-            "line-color": lines[activeLineId].color,
+            "line-color": activeLine.getColor(),
             "line-width": 5,
           }}
         />

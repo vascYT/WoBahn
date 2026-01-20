@@ -1,23 +1,26 @@
+import Route from "@/lib/route";
 import type { LineRes } from "@/types/api";
 import { useEffect } from "react";
 import { create } from "zustand";
 
 interface LineState {
-  id: string | null;
-  setId: (id: string | null) => void;
+  activeRoute: Route | null;
+  setActiveRoute: (route: Route | null) => void;
   data: LineRes | null;
   setData: (data: LineRes | null) => void;
 }
 
 export const useLineFetcher = () => {
-  const activeLineId = useLineStore((state) => state.id);
+  const activeRoute = useLineStore((state) => state.activeRoute);
   const setData = useLineStore((state) => state.setData);
 
   useEffect(() => {
     setData(null);
-    if (!activeLineId) return;
+    if (!activeRoute) return;
 
-    const eventSource = new EventSource(`/api/line?id=${activeLineId}`);
+    const eventSource = new EventSource(
+      `/api/line?line_id=${activeRoute.getLineId()}&direction=${activeRoute.getDirectionStr()}`,
+    );
 
     eventSource.onmessage = (event) => {
       setData(JSON.parse(event.data));
@@ -26,12 +29,12 @@ export const useLineFetcher = () => {
     return () => {
       eventSource.close();
     };
-  }, [activeLineId, setData]);
+  }, [activeRoute, setData]);
 };
 
 export const useLineStore = create<LineState>((set) => ({
-  id: null,
-  setId: (id) => set({ id }),
+  activeRoute: null,
+  setActiveRoute: (activeRoute) => set({ activeRoute }),
   data: null,
   setData: (data) => set({ data }),
 }));

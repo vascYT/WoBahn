@@ -21,14 +21,14 @@ export class LocationController {
     return LocationController.instance;
   }
 
-  public subscribe(line: string, callback: Callback) {
-    this.emitter.on(line, callback);
+  public subscribe(route: string, callback: Callback) {
+    this.emitter.on(route, callback);
     console.log(
-      `subscribed to ${line}, current subscribers: ${this.getSubscriberCount()}`
+      `subscribed to ${route}, current subscribers: ${this.getSubscriberCount()}`
     );
 
     // Send data if we already have it
-    const data = getCachedLine(line);
+    const data = getCachedLine(route);
     if (data) {
       callback(data);
     }
@@ -61,15 +61,15 @@ export class LocationController {
     const update = async () => {
       const subscriberCount = this.getSubscriberCount();
       if (subscriberCount > 0) {
-        const lines = this.emitter.eventNames() as string[];
+        const routes = this.emitter.eventNames() as string[];
 
         try {
           // Refetch data with currently subscribed lines
-          const monitorRes = await fetchMonitors(lines);
+          const monitorRes = await fetchMonitors(routes);
 
-          for (const line of lines) {
-            const data = parseLine(monitorRes, line);
-            this.emitter.emit(line, data);
+          for (const routeStr of routes) {
+            const data = parseLine(monitorRes, routeStr);
+            this.emitter.emit(routeStr, data);
           }
         } catch (e) {
           console.error("Error refetching monitors");

@@ -1,22 +1,28 @@
 import type { APIRoute } from "astro";
-import lines from "../../lib/lines";
+import lines from "@/assets/lines.json";
 import { LocationController } from "../../controllers/locations";
 import type { LineRes } from "../../types/api";
+import Route from "@/lib/route";
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
-  const line = url.searchParams.get("id");
+  const lineId = url.searchParams.get("line_id");
+  const direction = url.searchParams.get("direction");
 
-  if (!line)
-    return new Response("'line' parameter needed", {
+  if (!lineId || !direction)
+    return new Response("'line_id' and 'direction' parameters needed", {
       status: 400,
     });
 
-  if (!Object.keys(lines).includes(line))
-    return new Response("invalid line", {
+  if (
+    !Object.keys(lines).includes(lineId) ||
+    (direction !== "H" && direction !== "R")
+  )
+    return new Response("Invalid parameters", {
       status: 400,
     });
 
+  const route = new Route(lineId, direction);
   const locationController = LocationController.getInstance();
 
   let onUpdate: ((data: LineRes) => void) | null;
@@ -33,7 +39,7 @@ export const GET: APIRoute = async ({ request }) => {
         }
       };
 
-      locationController.subscribe(line, onUpdate);
+      locationController.subscribe(route.toString(), onUpdate);
       locationController.startUpdates();
 
       request.signal.addEventListener("abort", () => {
@@ -43,7 +49,7 @@ export const GET: APIRoute = async ({ request }) => {
     },
     cancel() {
       if (onUpdate) {
-        locationController.unsubscribe(line, onUpdate);
+        locationController.unsubscribe(route.toString(), onUpdate);
       }
     },
   });

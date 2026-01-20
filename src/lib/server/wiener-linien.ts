@@ -5,36 +5,35 @@ import type {
   MonitorRes,
   TrafficInfo,
 } from "../../types/wiener_linien";
-import lines from "../lines";
+import Route from "@/lib/route";
 
 const cachedLines = new Map<string, LineRes>();
 
 export function getTrainId(
-  lineKey: string,
+  route: string,
   currentStopId: number | null,
   nextStopId: number,
-  currentTrains: Train[]
+  currentTrains: Train[],
 ) {
-  const cachedLine = cachedLines.get(lineKey);
+  const cachedLine = getCachedLine(route);
   if (!cachedLine) return crypto.randomUUID();
 
   const existingTrain = cachedLine.trains.find(
     (train) =>
       (train.nextStopId === nextStopId || train.nextStopId === currentStopId) &&
-      !currentTrains.map((t) => t.id).includes(train.id)
+      !currentTrains.map((t) => t.id).includes(train.id),
   );
 
   return existingTrain ? existingTrain.id : crypto.randomUUID();
 }
 
-export async function fetchMonitors(lineKeys: string[]) {
+export async function fetchMonitors(routesStr: string[]) {
   let url =
     "https://www.wienerlinien.at/ogd_realtime/monitor?activateTrafficInfo=stoerunglang&";
 
   const stopIds = [];
-  for (const lineKey of lineKeys) {
-    const line = lines[lineKey];
-    stopIds.push(...line.stops);
+  for (const routeStr of routesStr) {
+    stopIds.push(...Route.fromString(routeStr).getDirection().stops);
   }
   // using a set removes any duplicate values
   url += [...new Set(stopIds)].map((id) => `stopId=${id}`).join("&");
@@ -46,21 +45,22 @@ export async function fetchMonitors(lineKeys: string[]) {
   return data as MonitorRes;
 }
 
-export function getCachedLine(lineKey: string) {
-  return cachedLines.get(lineKey);
+export function getCachedLine(routeStr: string) {
+  return cachedLines.get(routeStr);
 }
 
-export function deleteCachedLine(lineKey: string) {
-  cachedLines.delete(lineKey);
+export function deleteCachedLine(routeStr: string) {
+  cachedLines.delete(routeStr);
 }
 
-export function parseLine(monitorRes: MonitorRes, lineKey: string) {
+export function parseLine(monitorRes: MonitorRes, routeStr: string) {
+  const route = Route.fromString(routeStr);
   const { stations, trains } = parseCoordinates(
     monitorRes.data.monitors,
-    lineKey
+    route,
   );
   const trafficInfos = monitorRes.data.trafficInfos
-    ? parseTrafficInfos(monitorRes.data.trafficInfos, lineKey)
+    ? parseTrafficInfos(monitorRes.data.trafficInfos, route)
     : [];
 
   const line = {
@@ -69,7 +69,7 @@ export function parseLine(monitorRes: MonitorRes, lineKey: string) {
     trafficInfos,
     lastUpdate: new Date().toISOString(),
   };
-  cachedLines.set(lineKey, line);
+  cachedLines.set(route.toString(), line);
 
   return line;
 }
@@ -79,24 +79,25 @@ const getNextDepatureDate = (departure: DepartureTime) =>
     ? new Date(departure.timeReal).toISOString()
     : new Date(Date.now() + departure.countdown * 60 * 1000).toISOString();
 
-export function parseCoordinates(monitors: Monitor[], lineKey: string) {
-  const line = lines[lineKey];
+export function parseCoordinates(monitors: Monitor[], route: Route) {
+  const line = route.getLine();
+  const stops = route.getDirection().stops;
 
   // Get train coordinates
   const stations: Station[] = [];
   const trains: Train[] = [];
-  for (let i = 1; i < line.stops.length; i++) {
-    const stopId = line.stops[i];
-    const previousStopId = line.stops[i - 1];
+  for (let i = 1; i < stops.length; i++) {
+    const stopId = stops[i];
+    const previousStopId = stops[i - 1];
 
     const [previousMonitor, monitor] = [previousStopId, stopId].map((id) =>
       monitors.find(
         (monitor) =>
           monitor.locationStop.properties.attributes.rbl === id &&
-          monitor.lines[0].lineId == line.lineId &&
-          (i == line.stops.length - 1 ||
-            monitor.lines[0].direction == line.direction) // Last stop is always in the other direction
-      )
+          monitor.lines[0].lineId == Number.parseInt(route.getLineId()) &&
+          (i == stops.length - 1 ||
+            monitor.lines[0].direction == route.getDirectionStr()), // Last stop is always in the other direction
+      ),
     );
     if (!monitor || !previousMonitor) continue; // skip, if one of them are missing
 
@@ -128,12 +129,11 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
     });
 
     if (departure.departureTime.countdown == 0) {
-      const nextStopId =
-        i !== line.stops.length - 1 ? line.stops[i + 1] : line.stops[i];
+      const nextStopId = i !== stops.length - 1 ? stops[i + 1] : stops[i];
 
       // Train at current stop
       trains.push({
-        id: getTrainId(lineKey, stopId, nextStopId, trains),
+        id: getTrainId(route.toString(), stopId, nextStopId, trains),
         description: `At ${monitor.locationStop.properties.title}`,
         arrivingAt: null,
         previousCoords: [lat, lng],
@@ -148,7 +148,7 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
     ) {
       // Train between previous and current stop
       trains.push({
-        id: getTrainId(lineKey, null, stopId, trains),
+        id: getTrainId(route.toString(), null, stopId, trains),
         description: `Next stop: ${monitor.locationStop.properties.title}`,
         arrivingAt: getNextDepatureDate(departure.departureTime),
         previousCoords: [prvLat, prvLng],
@@ -163,11 +163,8 @@ export function parseCoordinates(monitors: Monitor[], lineKey: string) {
   return { stations, trains };
 }
 
-export function parseTrafficInfos(
-  trafficInfos: TrafficInfo[],
-  lineKey: string
-) {
-  const stopIds = lines[lineKey].stops;
+export function parseTrafficInfos(trafficInfos: TrafficInfo[], route: Route) {
+  const stopIds = route.getDirection().stops;
 
   const data: TrafficInfo[] = [];
   for (const stopId of stopIds) {
