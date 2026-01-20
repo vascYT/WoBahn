@@ -10,8 +10,8 @@
     "updateLines": "tsx src/scripts/updateLines.ts"
   },
   "dependencies": {
-    "@astrojs/node": "^9.4.3",
-    "@astrojs/react": "^4.3.0",
+    "@astrojs/node": "^9.5.2",
+    "@astrojs/react": "^4.4.2",
     "@fast-csv/parse": "^5.0.5",
     "@protomaps/basemaps": "^5.5.1",
     "@radix-ui/react-dialog": "^1.1.6",
@@ -21,7 +21,7 @@
     "@tailwindcss/vite": "^4.0.5",
     "@types/react": "^19.0.4",
     "@types/react-dom": "^19.0.2",
-    "astro": "^5.13.5",
+    "astro": "^5.16.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
