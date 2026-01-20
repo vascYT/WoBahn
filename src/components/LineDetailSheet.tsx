@@ -1,4 +1,4 @@
-import { useLineStore } from "@/hooks/useLineStore";
+import { useRouteStore } from "@/hooks/useRouteStore";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
 import TrafficInfos from "./TrafficInfos";
 import LineLabel from "./LineLabel";
@@ -7,20 +7,20 @@ import { getRelativeSecondsPast } from "@/lib/utils";
 import Spinner from "./ui/spinner";
 
 export default function LineDetailSheet() {
-  const activeRoute = useLineStore((state) => state.activeRoute);
-  const setActiveRoute = useLineStore((state) => state.setActiveRoute);
-  const activeLineData = useLineStore((state) => state.data);
+  const activeRoute = useRouteStore((state) => state.active);
+  const setActiveRoute = useRouteStore((state) => state.setActive);
+  const activeRouteData = useRouteStore((state) => state.data);
   const [lastUpdateSec, setLastUpdateSec] = useState<number | null>(null);
 
   useEffect(() => {
     const updateCounter = () => {
       setLastUpdateSec(
-        getRelativeSecondsPast(new Date(activeLineData!.lastUpdate)),
+        getRelativeSecondsPast(new Date(activeRouteData!.lastUpdate))
       );
     };
 
     let timeout = null;
-    if (activeLineData) {
+    if (activeRouteData) {
       updateCounter();
       timeout = setInterval(updateCounter, 1000);
     } else {
@@ -30,7 +30,7 @@ export default function LineDetailSheet() {
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [activeLineData]);
+  }, [activeRouteData]);
 
   return (
     <Drawer
@@ -55,7 +55,7 @@ export default function LineDetailSheet() {
             </DrawerTitle>
           </DrawerHeader>
           <div className="min-h-20">
-            {activeLineData ? <TrafficInfos /> : <Spinner />}
+            {activeRouteData ? <TrafficInfos /> : <Spinner />}
           </div>
           <p className="py-2 text-xs opacity-80 text-center">
             Please keep in mind that the locations may not be accurate.

@@ -2,9 +2,9 @@ import type { LatLngTuple } from "leaflet";
 import type lines from "../lib/lines";
 import type { TrafficInfo } from "./wiener_linien";
 
-export type LineRes = {
+export type RouteRes = {
   stations: Station[];
-  trains: Train[];
+  vehicles: Vehicle[];
   trafficInfos: TrafficInfo[];
   lastUpdate: string;
 };
@@ -24,7 +24,7 @@ export type Station = {
   barrierFree: boolean;
 };
 
-export type Train = {
+export type Vehicle = {
   id: string;
   description: string;
   previousCoords: LatLngTuple;

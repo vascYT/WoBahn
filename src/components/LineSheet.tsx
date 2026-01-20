@@ -11,7 +11,7 @@ import { Separator } from "./ui/separator";
 import { Fragment, useState } from "react";
 import Logo from "../assets/wobahn.png";
 import GithubIcon from "../assets/github.svg";
-import { useLineStore } from "@/hooks/useLineStore";
+import { useRouteStore } from "@/hooks/useRouteStore";
 import LineLabel from "./LineLabel";
 import Route from "@/lib/route";
 
@@ -19,8 +19,8 @@ const snapPoints = ["300px", 1];
 
 export default function LineSheet() {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
-  const activeRoute = useLineStore((state) => state.activeRoute);
-  const setActiveLine = useLineStore((state) => state.setActiveRoute);
+  const activeRoute = useRouteStore((state) => state.active);
+  const setActiveLine = useRouteStore((state) => state.setActive);
 
   return (
     <Drawer
@@ -55,7 +55,7 @@ export default function LineSheet() {
                   <Separator />
                 </Fragment>
               );
-            }),
+            })
           )}
           <DrawerFooter className="mt-5">
             <div className="flex flex-col gap-3 items-center justify-center">

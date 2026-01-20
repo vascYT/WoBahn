@@ -1,17 +1,17 @@
-import { useLineStore } from "@/hooks/useLineStore";
+import { useRouteStore } from "@/hooks/useRouteStore";
 import { AlertCircle } from "lucide-react";
 
 export default function TrafficInfos() {
-  const activeLineData = useLineStore((state) => state.data);
+  const activeRouteData = useRouteStore((state) => state.data);
 
-  if (!activeLineData) return <></>;
+  if (!activeRouteData) return <></>;
 
-  if (activeLineData.trafficInfos.length == 0)
+  if (activeRouteData.trafficInfos.length == 0)
     return <p className="text-sm opacity-90 text-center">No current issues.</p>;
 
   return (
     <div className="pb-5 px-4">
-      {activeLineData.trafficInfos.map((trafficInfo) => (
+      {activeRouteData.trafficInfos.map((trafficInfo) => (
         <button
           key={trafficInfo.name}
           className="flex items-center space-x-2 bg-orange-300 border border-orange-400 rounded-md py-3 px-2 mt-3 w-full"

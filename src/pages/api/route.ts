@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import lines from "@/assets/lines.json";
 import { LocationController } from "../../controllers/locations";
-import type { LineRes } from "../../types/api";
+import type { RouteRes } from "../../types/api";
 import Route from "@/lib/route";
 
 export const GET: APIRoute = async ({ request }) => {
@@ -25,7 +25,7 @@ export const GET: APIRoute = async ({ request }) => {
   const route = new Route(lineId, direction);
   const locationController = LocationController.getInstance();
 
-  let onUpdate: ((data: LineRes) => void) | null;
+  let onUpdate: ((data: RouteRes) => void) | null;
   const body = new ReadableStream({
     start(controller) {
       const encoder = new TextEncoder();

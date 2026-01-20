@@ -1,4 +1,4 @@
-import type { LineRes, Station, Train } from "../../types/api";
+import type { RouteRes, Station, Vehicle } from "../../types/api";
 import type {
   DepartureTime,
   Monitor,
@@ -7,21 +7,21 @@ import type {
 } from "../../types/wiener_linien";
 import Route from "@/lib/route";
 
-const cachedLines = new Map<string, LineRes>();
+const cachedRoutes = new Map<string, RouteRes>();
 
-export function getTrainId(
+export function getVehicleId(
   route: string,
   currentStopId: number | null,
   nextStopId: number,
-  currentTrains: Train[],
+  currentVehicles: Vehicle[]
 ) {
-  const cachedLine = getCachedLine(route);
-  if (!cachedLine) return crypto.randomUUID();
+  const cachedRoute = getCachedRoute(route);
+  if (!cachedRoute) return crypto.randomUUID();
 
-  const existingTrain = cachedLine.trains.find(
+  const existingTrain = cachedRoute.vehicles.find(
     (train) =>
       (train.nextStopId === nextStopId || train.nextStopId === currentStopId) &&
-      !currentTrains.map((t) => t.id).includes(train.id),
+      !currentVehicles.map((t) => t.id).includes(train.id)
   );
 
   return existingTrain ? existingTrain.id : crypto.randomUUID();
@@ -45,33 +45,33 @@ export async function fetchMonitors(routesStr: string[]) {
   return data as MonitorRes;
 }
 
-export function getCachedLine(routeStr: string) {
-  return cachedLines.get(routeStr);
+export function getCachedRoute(routeStr: string) {
+  return cachedRoutes.get(routeStr);
 }
 
-export function deleteCachedLine(routeStr: string) {
-  cachedLines.delete(routeStr);
+export function deleteCachedRoute(routeStr: string) {
+  cachedRoutes.delete(routeStr);
 }
 
-export function parseLine(monitorRes: MonitorRes, routeStr: string) {
+export function parseRoute(monitorRes: MonitorRes, routeStr: string) {
   const route = Route.fromString(routeStr);
-  const { stations, trains } = parseCoordinates(
+  const { stations, vehicles } = parseCoordinates(
     monitorRes.data.monitors,
-    route,
+    route
   );
   const trafficInfos = monitorRes.data.trafficInfos
     ? parseTrafficInfos(monitorRes.data.trafficInfos, route)
     : [];
 
-  const line = {
+  const routeRes = {
     stations,
-    trains,
+    vehicles,
     trafficInfos,
     lastUpdate: new Date().toISOString(),
   };
-  cachedLines.set(route.toString(), line);
+  cachedRoutes.set(route.toString(), routeRes);
 
-  return line;
+  return routeRes;
 }
 
 const getNextDepatureDate = (departure: DepartureTime) =>
@@ -85,7 +85,7 @@ export function parseCoordinates(monitors: Monitor[], route: Route) {
 
   // Get train coordinates
   const stations: Station[] = [];
-  const trains: Train[] = [];
+  const vehicles: Vehicle[] = [];
   for (let i = 1; i < stops.length; i++) {
     const stopId = stops[i];
     const previousStopId = stops[i - 1];
@@ -96,8 +96,8 @@ export function parseCoordinates(monitors: Monitor[], route: Route) {
           monitor.locationStop.properties.attributes.rbl === id &&
           monitor.lines[0].lineId == Number.parseInt(route.getLineId()) &&
           (i == stops.length - 1 ||
-            monitor.lines[0].direction == route.getDirectionStr()), // Last stop is always in the other direction
-      ),
+            monitor.lines[0].direction == route.getDirectionStr()) // Last stop is always in the other direction
+      )
     );
     if (!monitor || !previousMonitor) continue; // skip, if one of them are missing
 
@@ -132,8 +132,8 @@ export function parseCoordinates(monitors: Monitor[], route: Route) {
       const nextStopId = i !== stops.length - 1 ? stops[i + 1] : stops[i];
 
       // Train at current stop
-      trains.push({
-        id: getTrainId(route.toString(), stopId, nextStopId, trains),
+      vehicles.push({
+        id: getVehicleId(route.toString(), stopId, nextStopId, vehicles),
         description: `At ${monitor.locationStop.properties.title}`,
         arrivingAt: null,
         previousCoords: [lat, lng],
@@ -147,8 +147,8 @@ export function parseCoordinates(monitors: Monitor[], route: Route) {
       departure.departureTime.countdown
     ) {
       // Train between previous and current stop
-      trains.push({
-        id: getTrainId(route.toString(), null, stopId, trains),
+      vehicles.push({
+        id: getVehicleId(route.toString(), null, stopId, vehicles),
         description: `Next stop: ${monitor.locationStop.properties.title}`,
         arrivingAt: getNextDepatureDate(departure.departureTime),
         previousCoords: [prvLat, prvLng],
@@ -160,7 +160,7 @@ export function parseCoordinates(monitors: Monitor[], route: Route) {
     }
   }
 
-  return { stations, trains };
+  return { stations, vehicles };
 }
 
 export function parseTrafficInfos(trafficInfos: TrafficInfo[], route: Route) {

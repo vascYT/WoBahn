@@ -1,4 +1,4 @@
-import { useLineFetcher } from "@/hooks/useLineStore";
+import { useRouteFetcher } from "@/hooks/useRouteStore";
 import Map, {
   AttributionControl,
   GeolocateControl,
@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import LineMapOverlay from "./LineMapOverlay";
 
 export default function MapView() {
-  useLineFetcher();
+  useRouteFetcher();
 
   useEffect(() => {
     let protocol = new Protocol();

@@ -5,7 +5,7 @@ export default function LineLabel({ route }: { route: Route }) {
   const direction = route.getDirection();
 
   return (
-    <p className="flex items-center gap-2">
+    <p className="flex items-center gap-2 shrink-0">
       <span
         className="flex items-center justify-center w-10 h-6 rounded-xs font-semibold"
         style={{ backgroundColor: `${route.getColor()}90` }}

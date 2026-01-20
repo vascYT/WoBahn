@@ -3,40 +3,36 @@ import FelixIcon from "../assets/felix.png";
 import SilberpfeilIcon from "../assets/silberpfeil.png";
 import StationIcon from "../assets/metro-station.svg";
 import { useEffect, useRef, useState } from "react";
-import { useLineStore } from "@/hooks/useLineStore";
-import type { Station, Train } from "@/types/api";
+import { useRouteStore } from "@/hooks/useRouteStore";
+import type { Station, Vehicle } from "@/types/api";
 import { cn, getRelativeSeconds } from "@/lib/utils";
 import useCountdown from "@/hooks/useCountdown";
 import { Accessibility } from "lucide-react";
 import type { AnimatedMarkerRef } from "./AnimatedMarker";
 import AnimatedMarker from "./AnimatedMarker";
 
-function VehicleMarker({ train }: { train: Train }) {
+function VehicleMarker({ vehicle }: { vehicle: Vehicle }) {
   const markerRef = useRef<AnimatedMarkerRef>(null);
   const arrivingIn = useCountdown(
-    train.arrivingAt ? getRelativeSeconds(new Date(train.arrivingAt)) : 0,
+    vehicle.arrivingAt ? getRelativeSeconds(new Date(vehicle.arrivingAt)) : 0
   );
 
   useEffect(() => {
     if (!markerRef.current) return;
 
     const isMoving = markerRef.current.isMoving();
-    if (
-      (isMoving && train.arrivingAt !== null) ||
-      (!isMoving && train.arrivingAt === null)
-    )
-      return;
+    if (isMoving && vehicle.arrivingAt !== null) return;
 
     markerRef.current.moveTo(
       {
-        lat: train.nextCoords[0],
-        lng: train.nextCoords[1],
+        lat: vehicle.nextCoords[0],
+        lng: vehicle.nextCoords[1],
       },
-      train.arrivingAt
-        ? (getRelativeSeconds(new Date(train.arrivingAt)) - 10) * 1000
-        : 500,
+      vehicle.arrivingAt
+        ? (getRelativeSeconds(new Date(vehicle.arrivingAt)) - 10) * 1000
+        : 500
     );
-  }, [train.nextCoords, markerRef.current]);
+  }, [vehicle.nextCoords, markerRef.current]);
 
   return (
     <>
@@ -46,28 +42,28 @@ function VehicleMarker({ train }: { train: Train }) {
           <>
             {import.meta.env.DEV && (
               <>
-                {train.id} <br />
-                Next stop: {train.nextStopId} <br />
-                Current stop: {train.currentStopId} <br />
+                {vehicle.id} <br />
+                Next stop: {vehicle.nextStopId} <br />
+                Current stop: {vehicle.currentStopId} <br />
               </>
             )}
-            {train.description}
-            {train.arrivingAt && (
+            {vehicle.description}
+            {vehicle.arrivingAt && (
               <>
                 <br /> Arriving in &lt; {arrivingIn}s
               </>
             )}
-            {train.barrierFree && (
+            {vehicle.barrierFree && (
               <Accessibility className="bg-blue-600 rounded-full stroke-white p-[2px] size-5 mt-1" />
             )}
           </>
         }
-        initialLat={train.previousCoords[0]}
-        initialLng={train.previousCoords[1]}
+        initialLat={vehicle.previousCoords[0]}
+        initialLng={vehicle.previousCoords[1]}
       >
         <img
-          src={train.barrierFree ? FelixIcon.src : SilberpfeilIcon.src}
-          className={cn("w-10", train.arrivingAt && "animate-pulse")}
+          src={vehicle.barrierFree ? FelixIcon.src : SilberpfeilIcon.src}
+          className={cn("w-10", vehicle.arrivingAt && "animate-pulse")}
         />
       </AnimatedMarker>
     </>
@@ -105,7 +101,7 @@ function StationPopup({
   const nextDepature = useCountdown(
     station.nextDepature
       ? getRelativeSeconds(new Date(station.nextDepature))
-      : 0,
+      : 0
   );
 
   return (
@@ -131,11 +127,11 @@ function StationPopup({
 }
 
 export default function LineMapOverlay() {
-  const activeLine = useLineStore((state) => state.activeRoute);
-  const activeLineData = useLineStore((state) => state.data);
+  const activeRoute = useRouteStore((state) => state.active);
+  const activeLineData = useRouteStore((state) => state.data);
   const [activeStation, setActiveStation] = useState<Station | null>(null);
 
-  if (!activeLineData || !activeLine) return <></>;
+  if (!activeLineData || !activeRoute) return <></>;
 
   return (
     <>
@@ -162,7 +158,7 @@ export default function LineMapOverlay() {
             "line-cap": "round",
           }}
           paint={{
-            "line-color": activeLine.getColor(),
+            "line-color": activeRoute.getColor(),
             "line-width": 5,
           }}
         />
@@ -182,8 +178,8 @@ export default function LineMapOverlay() {
           }}
         />
       ))}
-      {activeLineData.trains.map((train) => (
-        <VehicleMarker key={train.id} train={train} />
+      {activeLineData.vehicles.map((vehicle) => (
+        <VehicleMarker key={vehicle.id} vehicle={vehicle} />
       ))}
     </>
   );

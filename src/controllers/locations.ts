@@ -1,13 +1,13 @@
 import EventEmitter from "events";
 import {
-  deleteCachedLine,
+  getCachedRoute,
+  deleteCachedRoute,
   fetchMonitors,
-  getCachedLine,
-  parseLine,
+  parseRoute,
 } from "../lib/server/wiener-linien";
-import type { LineRes } from "../types/api";
+import type { RouteRes } from "../types/api";
 
-type Callback = (data: LineRes) => void;
+type Callback = (data: RouteRes) => void;
 
 export class LocationController {
   private static instance: LocationController;
@@ -28,7 +28,7 @@ export class LocationController {
     );
 
     // Send data if we already have it
-    const data = getCachedLine(route);
+    const data = getCachedRoute(route);
     if (data) {
       callback(data);
     }
@@ -41,7 +41,7 @@ export class LocationController {
     );
 
     if (this.emitter.listenerCount(line) < 1) {
-      deleteCachedLine(line);
+      deleteCachedRoute(line);
     }
   }
 
@@ -68,7 +68,7 @@ export class LocationController {
           const monitorRes = await fetchMonitors(routes);
 
           for (const routeStr of routes) {
-            const data = parseLine(monitorRes, routeStr);
+            const data = parseRoute(monitorRes, routeStr);
             this.emitter.emit(routeStr, data);
           }
         } catch (e) {
