@@ -4,14 +4,15 @@ import SilberpfeilIcon from "../assets/silberpfeil.png";
 import StationIcon from "../assets/metro-station.svg";
 import { useEffect, useRef, useState } from "react";
 import { useRouteStore } from "@/hooks/useRouteStore";
-import type { Station, Vehicle } from "@/types/api";
+import type { LineType, Station, Vehicle } from "@/types/api";
 import { cn, getRelativeSeconds } from "@/lib/utils";
 import useCountdown from "@/hooks/useCountdown";
 import { Accessibility } from "lucide-react";
 import type { AnimatedMarkerRef } from "./AnimatedMarker";
 import AnimatedMarker from "./AnimatedMarker";
+import type Route from "@/lib/route";
 
-function VehicleMarker({ vehicle }: { vehicle: Vehicle }) {
+function VehicleMarker({ route, vehicle }: { route: Route; vehicle: Vehicle }) {
   const markerRef = useRef<AnimatedMarkerRef>(null);
   const arrivingIn = useCountdown(
     vehicle.arrivingAt ? getRelativeSeconds(new Date(vehicle.arrivingAt)) : 0
@@ -61,19 +62,25 @@ function VehicleMarker({ vehicle }: { vehicle: Vehicle }) {
         initialLat={vehicle.previousCoords[0]}
         initialLng={vehicle.previousCoords[1]}
       >
-        <img
-          src={vehicle.barrierFree ? FelixIcon.src : SilberpfeilIcon.src}
-          className={cn("w-10", vehicle.arrivingAt && "animate-pulse")}
-        />
+        {route.getLine().type === "ptMetro" ? (
+          <img
+            src={vehicle.barrierFree ? FelixIcon.src : SilberpfeilIcon.src}
+            className={cn("w-10", vehicle.arrivingAt && "animate-pulse")}
+          />
+        ) : (
+          <div className="bg-orange-400 border-2 border-white w-5 h-5 rounded-full" />
+        )}
       </AnimatedMarker>
     </>
   );
 }
 
 function StationMarker({
+  route,
   station,
   onClick,
 }: {
+  route: Route;
   station: Station;
   onClick: () => void;
 }) {
@@ -86,7 +93,16 @@ function StationMarker({
         onClick();
       }}
     >
-      <img src={StationIcon.src} className="w-5" />
+      {route.getLine().type === "ptMetro" ? (
+        <img src={StationIcon.src} className="w-5" />
+      ) : (
+        <div
+          className="flex items-center justify-center w-4 h-4 rounded-full text-white font-bold"
+          style={{ backgroundColor: route.getColor() }}
+        >
+          <p>H</p>
+        </div>
+      )}
     </Marker>
   );
 }
@@ -133,6 +149,7 @@ export default function LineMapOverlay() {
 
   if (!activeLineData || !activeRoute) return <></>;
 
+  const lineType = activeRoute.getLine().type;
   return (
     <>
       <Source
@@ -159,7 +176,7 @@ export default function LineMapOverlay() {
           }}
           paint={{
             "line-color": activeRoute.getColor(),
-            "line-width": 5,
+            "line-width": 3,
           }}
         />
       </Source>
@@ -172,6 +189,7 @@ export default function LineMapOverlay() {
       {activeLineData.stations.map((station) => (
         <StationMarker
           key={station.id}
+          route={activeRoute}
           station={station}
           onClick={() => {
             setActiveStation(station);
@@ -179,7 +197,7 @@ export default function LineMapOverlay() {
         />
       ))}
       {activeLineData.vehicles.map((vehicle) => (
-        <VehicleMarker key={vehicle.id} vehicle={vehicle} />
+        <VehicleMarker key={vehicle.id} route={activeRoute} vehicle={vehicle} />
       ))}
     </>
   );
