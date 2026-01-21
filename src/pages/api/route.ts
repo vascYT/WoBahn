@@ -41,11 +41,6 @@ export const GET: APIRoute = async ({ request }) => {
 
       locationController.subscribe(route.toString(), onUpdate);
       locationController.startUpdates();
-
-      request.signal.addEventListener("abort", () => {
-        console.log("Connection aborted, closing controller...");
-        controller.close();
-      });
     },
     cancel() {
       if (onUpdate) {
