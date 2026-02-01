@@ -16,6 +16,7 @@ import LineLabel from "./LineLabel";
 import Route from "@/lib/route";
 import type { LineType } from "@/types/api";
 import Beta from "./ui/beta";
+import { track } from "@plausible-analytics/tracker";
 
 function RouteButtons({
   type,
@@ -36,6 +37,9 @@ function RouteButtons({
               className="justify-start py-6 active:opacity-80 active:scale-[99%] transition-all w-full"
               variant="ghost"
               onClick={() => {
+                track("route_select", {
+                  props: { line: route.toString() },
+                });
                 setActiveRoute(route);
               }}
             >
@@ -44,7 +48,7 @@ function RouteButtons({
             <Separator />
           </Fragment>
         );
-      })
+      }),
     );
 }
 

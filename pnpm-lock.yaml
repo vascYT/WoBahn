@@ -17,6 +17,9 @@ importers:
       '@fast-csv/parse':
         specifier: ^5.0.5
         version: 5.0.5
+      '@plausible-analytics/tracker':
+        specifier: ^0.4.4
+        version: 0.4.4
       '@protomaps/basemaps':
         specifier: ^5.5.1
         version: 5.5.1
@@ -865,6 +868,9 @@ packages:
 
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
+
+  '@plausible-analytics/tracker@0.4.4':
+    resolution: {integrity: sha512-fz0NOYUEYXtg1TBaPEEvtcBq3FfmLFuTe1VZw4M8sTWX129br5dguu3M15+plOQnc181ShYe67RfwhKgK89VnA==}
 
   '@protomaps/basemaps@5.5.1':
     resolution: {integrity: sha512-dAQS0AVJcnPz5E6hfBxlu56MOYfkzq17wf+kXLGhHN8U9qNxYJZtoiRA9Q3hnTwKi7iAQ0rIekAF399skcX7fQ==}
@@ -3598,6 +3604,8 @@ snapshots:
       supercluster: 8.0.1
 
   '@oslojs/encoding@1.1.0': {}
+
+  '@plausible-analytics/tracker@0.4.4': {}
 
   '@protomaps/basemaps@5.5.1':
     dependencies:

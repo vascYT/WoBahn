@@ -3,25 +3,29 @@ import "../styles/global.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 const { title } = Astro.props;
-const { PUBLIC_PLAUSIBLE_URL, PUBLIC_PLAUSIBLE_DOMAIN } = import.meta.env;
 ---
 
-<!doctype html>
+<script>
+  import { init } from "@plausible-analytics/tracker";
+
+  const { PUBLIC_PLAUSIBLE_ENDPOINT, PUBLIC_PLAUSIBLE_DOMAIN } = import.meta
+    .env;
+
+  if (PUBLIC_PLAUSIBLE_ENDPOINT && PUBLIC_PLAUSIBLE_DOMAIN) {
+    init({
+      domain: PUBLIC_PLAUSIBLE_DOMAIN,
+      endpoint: PUBLIC_PLAUSIBLE_ENDPOINT,
+      captureOnLocalhost: true,
+    });
+  }
+</script>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.json" />
-    {
-      PUBLIC_PLAUSIBLE_URL && PUBLIC_PLAUSIBLE_DOMAIN && (
-        <script
-          defer
-          data-domain={PUBLIC_PLAUSIBLE_DOMAIN}
-          src={`${PUBLIC_PLAUSIBLE_URL}/js/script.js`}
-        />
-      )
-    }
     <title>
       {title ? `${title} • WoBahn` : "WoBahn"}
     </title>

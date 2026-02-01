@@ -13,6 +13,7 @@
     "@astrojs/node": "^9.5.2",
     "@astrojs/react": "^4.4.2",
     "@fast-csv/parse": "^5.0.5",
+    "@plausible-analytics/tracker": "^0.4.4",
     "@protomaps/basemaps": "^5.5.1",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-popover": "^1.1.6",
