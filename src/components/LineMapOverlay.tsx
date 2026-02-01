@@ -70,7 +70,7 @@ function VehicleMarker({ route, vehicle }: { route: Route; vehicle: Vehicle }) {
             className={cn("w-10", vehicle.arrivingAt && "animate-pulse")}
           />
         ) : (
-          <div className="bg-orange-400 border-2 border-white w-5 h-5 rounded-full" />
+          <div className="bg-orange-400 border-2 border-white w-5 h-5 m-4 rounded-full" />
         )}
       </AnimatedMarker>
     </>
@@ -99,7 +99,7 @@ function StationMarker({
         <img src={StationIcon.src} className="w-5" />
       ) : (
         <div
-          className="flex items-center justify-center w-4 h-4 rounded-full text-white font-bold"
+          className="flex items-center justify-center w-4 h-4 rounded-full text-white font-bold m-4"
           style={{ backgroundColor: route.getColor() }}
         >
           <p>H</p>
