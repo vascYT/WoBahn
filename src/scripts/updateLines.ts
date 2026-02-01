@@ -135,6 +135,16 @@ parseString(linesText, { headers: true, delimiter: ";" })
                 ...data[lineStr].directions.R,
                 directionLabel: lastStopR?.StopText || "",
               };
+
+              // Step 4: Dirty fix for last station (metros only)
+              if (data[lineStr].type === "ptMetro") {
+                data[lineStr].directions.H.stops[
+                  data[lineStr].directions.H.stops.length - 1
+                ] = data[lineStr].directions.R.stops[0];
+                data[lineStr].directions.R.stops[
+                  data[lineStr].directions.R.stops.length - 1
+                ] = data[lineStr].directions.H.stops[0];
+              }
             }
 
             console.log(`Total number of lines: ${Object.keys(data).length}`);
