@@ -17,45 +17,67 @@ import Route from "@/lib/route";
 import type { LineType } from "@/types/api";
 import Beta from "./ui/beta";
 import { track } from "@plausible-analytics/tracker";
+import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-function RouteButtons({
-  type,
+function RouteButton({
+  route,
   setActiveRoute,
 }: {
-  type: LineType;
+  route: Route;
   setActiveRoute: (route: Route) => void;
 }) {
-  return Object.keys(lines)
-    .filter((lineId) => lines[lineId as keyof typeof lines].type === type)
-    .map((lineId) =>
-      ["H", "R"].map((direction) => {
-        const route = new Route(lineId, direction as "H" | "R");
+  const favorites = useRouteStore((state) => state.favorites);
+  const addFavorite = useRouteStore((state) => state.addFavorite);
+  const removeFavorite = useRouteStore((state) => state.removeFavorite);
+  const isFavorite = favorites.includes(route.toString());
 
-        return (
-          <Fragment key={route.toString()}>
-            <Button
-              className="justify-start py-6 active:opacity-80 active:scale-[99%] transition-all w-full"
-              variant="ghost"
-              onClick={() => {
-                track("route_select", {
-                  props: { line: route.toString() },
-                });
-                setActiveRoute(route);
-              }}
-            >
-              <LineLabel route={route} />
-            </Button>
-            <Separator />
-          </Fragment>
-        );
-      }),
-    );
+  return (
+    <Fragment key={route.toString()}>
+      <div className="flex justify-center items-center" key={route.toString()}>
+        <Button
+          className="justify-start py-6 active:opacity-80 active:scale-[99%] transition-all w-full"
+          variant="ghost"
+          onClick={() => {
+            try {
+              track("route_select", {
+                props: {
+                  line: `${route.getLine()} ${route.getDirection().directionLabel}`,
+                },
+              });
+            } catch (e) {
+              console.warn("Couldn't track event");
+            }
+            setActiveRoute(route);
+          }}
+        >
+          <LineLabel route={route} />
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            if (isFavorite) {
+              removeFavorite(route.toString());
+            } else {
+              addFavorite(route.toString());
+            }
+          }}
+        >
+          <Star
+            className={cn(isFavorite && "fill-yellow-400 stroke-yellow-400")}
+          />
+        </Button>
+      </div>
+      <Separator />
+    </Fragment>
+  );
 }
 
 const snapPoints = ["300px", 1];
 
 export default function LineSheet() {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
+  const favoriteRoutes = useRouteStore((state) => state.favorites);
   const activeRoute = useRouteStore((state) => state.active);
   const setActiveRoute = useRouteStore((state) => state.setActive);
 
@@ -74,6 +96,20 @@ export default function LineSheet() {
           <DrawerTitle className="text-left">Select a line</DrawerTitle>
         </DrawerHeader>
         <div className="overflow-y-scroll">
+          {favoriteRoutes.length > 0 && (
+            <div className="mb-5">
+              <div className="flex items-center gap-2 px-4">
+                <p className="font-bold text-lg">Favorites</p>
+              </div>
+              {favoriteRoutes.map((route) => (
+                <RouteButton
+                  key={route}
+                  route={Route.fromString(route)}
+                  setActiveRoute={setActiveRoute}
+                />
+              ))}
+            </div>
+          )}
           {(
             [
               { type: "ptMetro", text: "Metros" },
@@ -87,7 +123,19 @@ export default function LineSheet() {
                 <p className="font-bold text-lg">{i.text}</p>
                 {i.type !== "ptMetro" && <Beta />}
               </div>
-              <RouteButtons type={i.type} setActiveRoute={setActiveRoute} />
+              {Object.keys(lines)
+                .filter(
+                  (lineId) =>
+                    lines[lineId as keyof typeof lines].type === i.type,
+                )
+                .flatMap((lineId) => [`${lineId}-H`, `${lineId}-R`])
+                .map((routeString) => (
+                  <RouteButton
+                    key={routeString}
+                    route={Route.fromString(routeString)}
+                    setActiveRoute={setActiveRoute}
+                  />
+                ))}
             </div>
           ))}
           <DrawerFooter className="mt-5">
