@@ -13,7 +13,7 @@ export function getVehicleId(
   route: string,
   currentStopId: number | null,
   nextStopId: number,
-  currentVehicles: Vehicle[]
+  currentVehicles: Vehicle[],
 ) {
   const cachedRoute = getCachedRoute(route);
   if (!cachedRoute) return crypto.randomUUID();
@@ -21,7 +21,7 @@ export function getVehicleId(
   const existingTrain = cachedRoute.vehicles.find(
     (train) =>
       (train.nextStopId === nextStopId || train.nextStopId === currentStopId) &&
-      !currentVehicles.map((t) => t.id).includes(train.id)
+      !currentVehicles.map((t) => t.id).includes(train.id),
   );
 
   return existingTrain ? existingTrain.id : crypto.randomUUID();
@@ -37,7 +37,7 @@ export async function fetchMonitors(routesStr: string[]) {
   }
   // using a set removes any duplicate values
   url += [...new Set(stopIds)].map((id) => `stopId=${id}`).join("&");
-  console.log(`Refetching ${url}`);
+  if (import.meta.env.DEV) console.log(`Refetching ${url}`);
 
   const res = await fetch(url);
   const data = await res.json();
@@ -57,7 +57,7 @@ export function parseRoute(monitorRes: MonitorRes, routeStr: string) {
   const route = Route.fromString(routeStr);
   const { stations, vehicles } = parseCoordinates(
     monitorRes.data.monitors,
-    route
+    route,
   );
   const trafficInfos = monitorRes.data.trafficInfos
     ? parseTrafficInfos(monitorRes.data.trafficInfos, route)
@@ -96,8 +96,8 @@ export function parseCoordinates(monitors: Monitor[], route: Route) {
           monitor.locationStop.properties.attributes.rbl === id &&
           monitor.lines[0].lineId == Number.parseInt(route.getLineId()) &&
           (i == stops.length - 1 ||
-            monitor.lines[0].direction == route.getDirectionStr()) // Last stop is always in the other direction
-      )
+            monitor.lines[0].direction == route.getDirectionStr()), // Last stop is always in the other direction
+      ),
     );
     if (!monitor || !previousMonitor) continue; // skip, if one of them are missing
 
