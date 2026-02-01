@@ -15,7 +15,7 @@ import type Route from "@/lib/route";
 function VehicleMarker({ route, vehicle }: { route: Route; vehicle: Vehicle }) {
   const markerRef = useRef<AnimatedMarkerRef>(null);
   const arrivingIn = useCountdown(
-    vehicle.arrivingAt ? getRelativeSeconds(new Date(vehicle.arrivingAt)) : 0
+    vehicle.arrivingAt ? getRelativeSeconds(new Date(vehicle.arrivingAt)) : 0,
   );
 
   useEffect(() => {
@@ -31,7 +31,7 @@ function VehicleMarker({ route, vehicle }: { route: Route; vehicle: Vehicle }) {
       },
       vehicle.arrivingAt
         ? (getRelativeSeconds(new Date(vehicle.arrivingAt)) - 10) * 1000
-        : 500
+        : 500,
     );
   }, [vehicle.nextCoords, markerRef.current]);
 
@@ -51,7 +51,9 @@ function VehicleMarker({ route, vehicle }: { route: Route; vehicle: Vehicle }) {
             {vehicle.description}
             {vehicle.arrivingAt && (
               <>
-                <br /> Arriving in &lt; {arrivingIn}s
+                <br /> Arriving in &lt;{" "}
+                {arrivingIn.minutes > 0 && arrivingIn.minutes + "m "}
+                {arrivingIn.seconds}s
               </>
             )}
             {vehicle.barrierFree && (
@@ -117,7 +119,7 @@ function StationPopup({
   const nextDepature = useCountdown(
     station.nextDepature
       ? getRelativeSeconds(new Date(station.nextDepature))
-      : 0
+      : 0,
   );
 
   return (
@@ -134,7 +136,8 @@ function StationPopup({
       )}
       {station.description}
       <br />
-      Next depature: {nextDepature}s
+      Next depature: {nextDepature.minutes > 0 && nextDepature.minutes + "m "}
+      {nextDepature.seconds}s
       {station.barrierFree && (
         <Accessibility className="bg-blue-600 rounded-full stroke-white p-[2px] size-5 mt-1" />
       )}
@@ -149,7 +152,6 @@ export default function LineMapOverlay() {
 
   if (!activeLineData || !activeRoute) return <></>;
 
-  const lineType = activeRoute.getLine().type;
   return (
     <>
       <Source

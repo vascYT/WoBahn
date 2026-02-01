@@ -24,7 +24,8 @@ const useCountdown = (initialSeconds: number) => {
     };
   }, [seconds]);
 
-  return seconds;
+  const minutes = Math.floor(seconds / 60);
+  return { minutes, seconds: seconds - minutes * 60 };
 };
 
 export default useCountdown;
