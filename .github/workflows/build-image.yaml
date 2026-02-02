@@ -48,5 +48,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PLAUSIBLE_URL=${{ vars.PLAUSIBLE_URL }}
+            PLAUSIBLE_ENDPOINT=${{ vars.PLAUSIBLE_ENDPOINT }}
             PLAUSIBLE_DOMAIN=${{ vars.PLAUSIBLE_DOMAIN }}
