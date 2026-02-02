@@ -34,9 +34,9 @@ function RouteButton({
 
   return (
     <Fragment key={route.toString()}>
-      <div className="flex justify-center items-center" key={route.toString()}>
+      <div key={route.toString()} className="flex items-center h-12">
         <Button
-          className="justify-start py-6 active:opacity-80 active:scale-[99%] transition-all w-full"
+          className="justify-start h-full active:opacity-80 active:scale-[99%] transition-all w-full"
           variant="ghost"
           onClick={() => {
             try {
@@ -54,6 +54,7 @@ function RouteButton({
           <LineLabel route={route} />
         </Button>
         <Button
+          className="h-full"
           variant="ghost"
           onClick={() => {
             if (isFavorite) {
