@@ -42,7 +42,7 @@ function RouteButton({
             try {
               track("route_select", {
                 props: {
-                  line: `${route.getLine()} ${route.getDirection().directionLabel}`,
+                  route: `${route.getLine().lineLabel} ${route.getDirection().directionLabel}`,
                 },
               });
             } catch (e) {
